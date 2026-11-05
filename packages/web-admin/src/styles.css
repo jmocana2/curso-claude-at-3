@@ -17,6 +17,7 @@
   --green-glow: rgba(74, 222, 128, 0.15);
   --red: #ef4444;
   --red-glow: rgba(239, 68, 68, 0.15);
+  --red-text: #f87171; /* rojo para texto: contraste >= 4.5:1 sobre fondos oscuros */
   --yellow: #facc15;
   --radius: 10px;
   --radius-sm: 6px;

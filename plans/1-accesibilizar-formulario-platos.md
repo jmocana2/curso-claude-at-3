@@ -63,7 +63,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 13. Validación en cliente en el `.ts`: método `validar()` que rellene un signal `errores` (`name` obligatorio, `price` > 0) y devuelva si es válido; `onSubmit()` no llama a la API si no lo es.
 - [x] 14. Mostrar errores en la plantilla: texto bajo cada campo con `id="dish-name-error"`, `aria-invalid` y `aria-describedby` en el control; resumen de errores con `role="alert"` al inicio del formulario; foco al primer campo inválido tras enviar.
 - [x] 15. Error de API: añadir `role="alert"` al `alert-error` y mover el foco a él al recibir el error.
-- [ ] 16. Limpiar CSS: eliminar clases `fake-*`, estilos para `.field-error` (color con contraste ≥ 4.5:1) y `legend`; comprobar que el diseño visual no cambia.
+- [x] 16. Limpiar CSS: eliminar clases `fake-*`, estilos para `.field-error` (color con contraste ≥ 4.5:1) y `legend`; comprobar que el diseño visual no cambia.
 - [ ] 17. Completar el test e2e, parte 1 (rellenar y modificar datos solo con `Tab`/`Shift+Tab`/teclas): escribir nombre, borrarlo y reescribirlo, cambiar precio, cambiar categoría y disponibilidad con flechas, escribir descripción.
 - [ ] 18. Test e2e, parte 2 (ingredientes): seleccionar dos ingredientes con flechas, fijar cantidad, añadirlos con `Enter`/`Espacio`, y quitar uno de ellos con el teclado; comprobar que el chip desaparece y el foco queda en un elemento lógico.
 - [ ] 19. Test e2e, parte 3 (errores): vaciar el nombre y poner precio 0, enviar con `Enter` y comprobar que se muestran los mensajes, `aria-invalid="true"` y que el foco está en el primer campo inválido.
@@ -110,4 +110,5 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - Nombres de métodos nuevos en camelCase (p. ej. `validar()`) aunque la plantilla del equipo pide `snake_case` — el código Angular/TypeScript existente usa camelCase en todo el proyecto y mezclar estilos sería peor.
 - Al quitar un ingrediente el foco va al siguiente botón "Quitar", al anterior si se quitó el último, y al selector si no quedan (durante la implementación) — evita que el foco salte lejos cuando se quita el último de la lista.
 - La región viva usa `role="status"` (equivale a `aria-live="polite"`) y se añade también el aviso "Ese ingrediente ya está en el plato." (durante la implementación) — antes un duplicado se ignoraba en silencio, sin feedback para el usuario.
+- Nuevo token `--red-text: #f87171` para texto de error (durante la implementación) — `--red` (#ef4444) solo da 4.41:1 sobre la tarjeta y 3.79:1 dentro de la alerta; `#f87171` da 6:1 y 5.15:1. El icono de quitar ingrediente pasa de `--text-muted` (2.45:1) a `--text-secondary` (4.74:1) por WCAG 1.4.11, y los campos con `aria-invalid` llevan borde rojo como refuerzo visual.
 - No se añade eslint/prettier a `web-admin` — no están configurados y queda fuera del alcance de la issue.
