@@ -61,7 +61,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 11. Gestión del foco en ingredientes: tras añadir, devolver el foco al select de ingrediente; tras quitar, mover el foco al siguiente botón "Quitar" (o al select si no quedan). Usar `viewChild`/`viewChildren` + `afterNextRender`.
 - [x] 12. Región `aria-live="polite"` (visualmente oculta) que anuncie "Ingrediente X añadido" / "Ingrediente X quitado"; y feedback si se intenta añadir sin seleccionar o con cantidad ≤ 0 (mensaje asociado por `aria-describedby`).
 - [x] 13. Validación en cliente en el `.ts`: método `validar()` que rellene un signal `errores` (`name` obligatorio, `price` > 0) y devuelva si es válido; `onSubmit()` no llama a la API si no lo es.
-- [ ] 14. Mostrar errores en la plantilla: texto bajo cada campo con `id="dish-name-error"`, `aria-invalid` y `aria-describedby` en el control; resumen de errores con `role="alert"` al inicio del formulario; foco al primer campo inválido tras enviar.
+- [x] 14. Mostrar errores en la plantilla: texto bajo cada campo con `id="dish-name-error"`, `aria-invalid` y `aria-describedby` en el control; resumen de errores con `role="alert"` al inicio del formulario; foco al primer campo inválido tras enviar.
 - [ ] 15. Error de API: añadir `role="alert"` al `alert-error` y mover el foco a él al recibir el error.
 - [ ] 16. Limpiar CSS: eliminar clases `fake-*`, estilos para `.field-error` (color con contraste ≥ 4.5:1) y `legend`; comprobar que el diseño visual no cambia.
 - [ ] 17. Completar el test e2e, parte 1 (rellenar y modificar datos solo con `Tab`/`Shift+Tab`/teclas): escribir nombre, borrarlo y reescribirlo, cambiar precio, cambiar categoría y disponibilidad con flechas, escribir descripción.

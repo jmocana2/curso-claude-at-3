@@ -1,4 +1,4 @@
-import { afterNextRender, Component, ElementRef, inject, Injector, OnInit, signal, viewChild, viewChildren } from '@angular/core'
+import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnInit, signal, viewChild, viewChildren } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { LucideAngularModule } from 'lucide-angular'
@@ -31,6 +31,8 @@ export class DishFormComponent implements OnInit {
   private readonly selectorIngrediente = viewChild.required<ElementRef<HTMLSelectElement>>('selectorIngrediente')
   private readonly botonesQuitar = viewChildren<ElementRef<HTMLButtonElement>>('botonQuitar')
   private readonly campoCantidad = viewChild.required<ElementRef<HTMLInputElement>>('campoCantidad')
+  private readonly campoNombre = viewChild.required<ElementRef<HTMLInputElement>>('campoNombre')
+  private readonly campoPrecio = viewChild.required<ElementRef<HTMLInputElement>>('campoPrecio')
 
   isEditing = false
   dishId: string | null = null
@@ -41,6 +43,8 @@ export class DishFormComponent implements OnInit {
   anuncio = signal('')
   /** Errores de validación del formulario, por campo. */
   errores = signal<ErroresPlato>({})
+  /** Mensajes de error en el orden de los campos, para el resumen. */
+  mensajesError = computed(() => [this.errores().name, this.errores().price].filter((m): m is string => !!m))
   /** Aviso del bloque de añadir ingrediente, asociado al campo que lo provoca. */
   errorIngrediente = signal<{ campo: 'ingrediente' | 'cantidad'; mensaje: string } | null>(null)
 
@@ -178,7 +182,11 @@ export class DishFormComponent implements OnInit {
 
   async onSubmit(): Promise<void> {
     this.error.set(null)
-    if (!this.validar()) return
+    if (!this.validar()) {
+      const primerCampoInvalido = this.errores().name ? this.campoNombre() : this.campoPrecio()
+      this.enfocarTrasRender(() => primerCampoInvalido.nativeElement)
+      return
+    }
     this.loading.set(true)
     try {
       if (this.isEditing && this.dishId) {

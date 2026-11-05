@@ -140,4 +140,13 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   await expect(page).toHaveURL(new RegExp(`${URL_NUEVO_PLATO}$`))
   await page.waitForTimeout(500)
   expect(envios_a_la_api).toHaveLength(0)
+
+  // Los errores se anuncian, se asocian a cada campo y el foco va al primero inválido
+  await expect(page.getByRole('alert')).toContainText('2 errores')
+  await expect(nombre).toBeFocused()
+  await expect(nombre).toHaveAttribute('aria-invalid', 'true')
+  await expect(nombre).toHaveAccessibleDescription('El nombre del plato es obligatorio.')
+  const precio = page.getByLabel('Precio (€)')
+  await expect(precio).toHaveAttribute('aria-invalid', 'true')
+  await expect(precio).toHaveAccessibleDescription('El precio debe ser mayor que 0.')
 })

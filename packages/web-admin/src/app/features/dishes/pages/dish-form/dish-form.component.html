@@ -13,15 +13,55 @@
   }
 
   <form class="card form-card" (ngSubmit)="onSubmit()" novalidate>
+    @if (mensajesError().length > 0) {
+      <div class="alert-error error-summary" role="alert">
+        <p>Revisa el formulario: {{ mensajesError().length === 1 ? 'hay 1 error' : 'hay ' + mensajesError().length + ' errores' }}.</p>
+        <ul>
+          @for (mensaje of mensajesError(); track mensaje) {
+            <li>{{ mensaje }}</li>
+          }
+        </ul>
+      </div>
+    }
+
     <div class="form-grid">
       <div class="form-group">
         <label for="dish-name">Nombre del plato</label>
-        <input id="dish-name" type="text" class="form-control" [(ngModel)]="form.name" name="name" placeholder="Ensalada César" />
+        <input
+          #campoNombre
+          id="dish-name"
+          type="text"
+          class="form-control"
+          [(ngModel)]="form.name"
+          name="name"
+          placeholder="Ensalada César"
+          required
+          [attr.aria-invalid]="errores().name ? 'true' : null"
+          [attr.aria-describedby]="errores().name ? 'dish-name-error' : null"
+        />
+        @if (errores().name) {
+          <p id="dish-name-error" class="field-error">{{ errores().name }}</p>
+        }
       </div>
 
       <div class="form-group">
         <label for="dish-price">Precio (€)</label>
-        <input id="dish-price" type="number" class="form-control" [(ngModel)]="form.price" name="price" />
+        <input
+          #campoPrecio
+          id="dish-price"
+          type="number"
+          class="form-control"
+          [(ngModel)]="form.price"
+          name="price"
+          min="0.01"
+          step="0.01"
+          required
+          [attr.aria-invalid]="errores().price ? 'true' : null"
+          [attr.aria-describedby]="errores().price ? 'dish-price-error' : null"
+        />
+        @if (errores().price) {
+          <p id="dish-price-error" class="field-error">{{ errores().price }}</p>
+        }
       </div>
 
       <div class="form-group">
