@@ -130,4 +130,14 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   const boton_guardar = page.getByRole('button', { name: 'Guardar' })
   await esperar_foco_visible(boton_guardar)
   await expect(boton_guardar).toHaveAttribute('type', 'submit')
+
+  // Enviar el formulario vacío no llama a la API
+  const envios_a_la_api: string[] = []
+  page.on('request', peticion => {
+    if (peticion.method() === 'POST' && peticion.url().includes('/dishes')) envios_a_la_api.push(peticion.url())
+  })
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(new RegExp(`${URL_NUEVO_PLATO}$`))
+  await page.waitForTimeout(500)
+  expect(envios_a_la_api).toHaveLength(0)
 })

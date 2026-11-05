@@ -8,6 +8,11 @@ import { DishService } from '../../services/dish.service'
 import { IngredientStore } from '../../../ingredients/store/ingredient.store'
 import type { CreateDishDto, DishCategory } from '../../models/dish.model'
 
+export interface ErroresPlato {
+  name?: string
+  price?: string
+}
+
 @Component({
   selector: 'app-dish-form',
   standalone: true,
@@ -34,6 +39,8 @@ export class DishFormComponent implements OnInit {
   error = signal<string | null>(null)
   /** Texto que se anuncia a los lectores de pantalla al añadir o quitar ingredientes. */
   anuncio = signal('')
+  /** Errores de validación del formulario, por campo. */
+  errores = signal<ErroresPlato>({})
   /** Aviso del bloque de añadir ingrediente, asociado al campo que lo provoca. */
   errorIngrediente = signal<{ campo: 'ingrediente' | 'cantidad'; mensaje: string } | null>(null)
 
@@ -156,8 +163,22 @@ export class DishFormComponent implements OnInit {
     return ingredient ? `${ingredient.name} (${ingredient.unit})` : ingredientId
   }
 
+  /** Valida el formulario, guarda los errores por campo y devuelve si es válido. */
+  validar(): boolean {
+    const errores: ErroresPlato = {}
+    if (!this.form.name?.trim()) {
+      errores.name = 'El nombre del plato es obligatorio.'
+    }
+    if (!(Number(this.form.price) > 0)) {
+      errores.price = 'El precio debe ser mayor que 0.'
+    }
+    this.errores.set(errores)
+    return Object.keys(errores).length === 0
+  }
+
   async onSubmit(): Promise<void> {
     this.error.set(null)
+    if (!this.validar()) return
     this.loading.set(true)
     try {
       if (this.isEditing && this.dishId) {
