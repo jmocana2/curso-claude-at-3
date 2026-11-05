@@ -264,4 +264,23 @@ test('vídeo: recorrido completo del formulario de platos solo con teclado', asy
   await expect(page.getByText('El precio debe ser mayor que 0.').first()).toBeVisible()
   expect(envios_a_la_api).toHaveLength(0)
   await pausa(page, 1500)
+
+  // 4. Corregir los errores, crear el plato y verlo en la lista
+  await expect(nombre).toBeFocused()
+  await page.keyboard.type(nombre_plato, { delay: 40 })
+  await page.keyboard.press('Tab')
+  await expect(precio).toBeFocused()
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type('9.5', { delay: 60 })
+  await pausa(page)
+  await page.keyboard.press('Enter')
+
+  await expect(page).toHaveURL(/\/restaurants\/rest-1\/dishes$/)
+  const fila = page.getByRole('row').filter({ hasText: nombre_plato })
+  await expect(fila).toBeVisible()
+  await expect(fila).toContainText('Entrante')
+  await expect(fila).toContainText('9.50 €')
+  expect(envios_a_la_api).toHaveLength(1)
+  await fila.scrollIntoViewIfNeeded()
+  await pausa(page, 2000)
 })
