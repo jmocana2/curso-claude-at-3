@@ -59,7 +59,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 9. Botones de acción: "Cancelar" → `<a [routerLink]="listUrl" class="btn btn-secondary">`, "Guardar" → `<button type="submit" class="btn btn-primary" [disabled]="loading()">`. Comprobar que Enter en un campo de texto envía el formulario.
 - [x] 10. Foco visible: regla global `:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }` para `a`, `button`, `.btn` y `.form-control` (quitar el efecto de `button { outline: none }`); verificar contraste ≥ 3:1 del indicador sobre `--bg-card`.
 - [x] 11. Gestión del foco en ingredientes: tras añadir, devolver el foco al select de ingrediente; tras quitar, mover el foco al siguiente botón "Quitar" (o al select si no quedan). Usar `viewChild`/`viewChildren` + `afterNextRender`.
-- [ ] 12. Región `aria-live="polite"` (visualmente oculta) que anuncie "Ingrediente X añadido" / "Ingrediente X quitado"; y feedback si se intenta añadir sin seleccionar o con cantidad ≤ 0 (mensaje asociado por `aria-describedby`).
+- [x] 12. Región `aria-live="polite"` (visualmente oculta) que anuncie "Ingrediente X añadido" / "Ingrediente X quitado"; y feedback si se intenta añadir sin seleccionar o con cantidad ≤ 0 (mensaje asociado por `aria-describedby`).
 - [ ] 13. Validación en cliente en el `.ts`: método `validar()` que rellene un signal `errores` (`name` obligatorio, `price` > 0) y devuelva si es válido; `onSubmit()` no llama a la API si no lo es.
 - [ ] 14. Mostrar errores en la plantilla: texto bajo cada campo con `id="dish-name-error"`, `aria-invalid` y `aria-describedby` en el control; resumen de errores con `role="alert"` al inicio del formulario; foco al primer campo inválido tras enviar.
 - [ ] 15. Error de API: añadir `role="alert"` al `alert-error` y mover el foco a él al recibir el error.
@@ -109,4 +109,5 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - Se usa `novalidate` en el `<form>` y validación propia — los globos nativos del navegador no son consistentes ni se graban bien en el vídeo.
 - Nombres de métodos nuevos en camelCase (p. ej. `validar()`) aunque la plantilla del equipo pide `snake_case` — el código Angular/TypeScript existente usa camelCase en todo el proyecto y mezclar estilos sería peor.
 - Al quitar un ingrediente el foco va al siguiente botón "Quitar", al anterior si se quitó el último, y al selector si no quedan (durante la implementación) — evita que el foco salte lejos cuando se quita el último de la lista.
+- La región viva usa `role="status"` (equivale a `aria-live="polite"`) y se añade también el aviso "Ese ingrediente ya está en el plato." (durante la implementación) — antes un duplicado se ignoraba en silencio, sin feedback para el usuario.
 - No se añade eslint/prettier a `web-admin` — no están configurados y queda fuera del alcance de la issue.

@@ -25,12 +25,17 @@ export class DishFormComponent implements OnInit {
 
   private readonly selectorIngrediente = viewChild.required<ElementRef<HTMLSelectElement>>('selectorIngrediente')
   private readonly botonesQuitar = viewChildren<ElementRef<HTMLButtonElement>>('botonQuitar')
+  private readonly campoCantidad = viewChild.required<ElementRef<HTMLInputElement>>('campoCantidad')
 
   isEditing = false
   dishId: string | null = null
   restaurantId: string = ''
   loading = signal(false)
   error = signal<string | null>(null)
+  /** Texto que se anuncia a los lectores de pantalla al añadir o quitar ingredientes. */
+  anuncio = signal('')
+  /** Aviso del bloque de añadir ingrediente, asociado al campo que lo provoca. */
+  errorIngrediente = signal<{ campo: 'ingrediente' | 'cantidad'; mensaje: string } | null>(null)
 
   categories: DishCategory[] = ['entrante', 'principal', 'postre', 'bebida']
 
@@ -99,14 +104,25 @@ export class DishFormComponent implements OnInit {
   }
 
   addIngredient(): void {
-    if (!this.newIngredientId || this.newIngredientQty <= 0) return
-    const exists = this.form.ingredients.find(i => i.ingredientId === this.newIngredientId)
-    if (exists) return
+    if (!this.newIngredientId) {
+      this.mostrarErrorIngrediente('ingrediente', 'Selecciona un ingrediente.')
+      return
+    }
+    if (this.form.ingredients.some(i => i.ingredientId === this.newIngredientId)) {
+      this.mostrarErrorIngrediente('ingrediente', 'Ese ingrediente ya está en el plato.')
+      return
+    }
+    if (!(this.newIngredientQty > 0)) {
+      this.mostrarErrorIngrediente('cantidad', 'La cantidad debe ser mayor que 0.')
+      return
+    }
+    this.errorIngrediente.set(null)
 
     this.form.ingredients = [
       ...this.form.ingredients,
       { ingredientId: this.newIngredientId, quantity: this.newIngredientQty }
     ]
+    this.anuncio.set(`Ingrediente ${this.getIngredientName(this.newIngredientId)} añadido.`)
     this.newIngredientId = ''
     this.newIngredientQty = 1
     this.enfocarTrasRender(() => this.selectorIngrediente().nativeElement)
@@ -115,12 +131,19 @@ export class DishFormComponent implements OnInit {
   removeIngredient(ingredientId: string): void {
     const indice = this.form.ingredients.findIndex(i => i.ingredientId === ingredientId)
     this.form.ingredients = this.form.ingredients.filter(i => i.ingredientId !== ingredientId)
+    this.anuncio.set(`Ingrediente ${this.getIngredientName(ingredientId)} quitado.`)
     // El foco pasa al siguiente botón "Quitar", al anterior si era el último, o al selector si no quedan
     this.enfocarTrasRender(() => {
       const botones = this.botonesQuitar()
       const boton = botones[indice] ?? botones[indice - 1]
       return boton?.nativeElement ?? this.selectorIngrediente().nativeElement
     })
+  }
+
+  private mostrarErrorIngrediente(campo: 'ingrediente' | 'cantidad', mensaje: string): void {
+    this.errorIngrediente.set({ campo, mensaje })
+    const campoConError = campo === 'ingrediente' ? this.selectorIngrediente() : this.campoCantidad()
+    this.enfocarTrasRender(() => campoConError.nativeElement)
   }
 
   /** Mueve el foco al elemento indicado cuando Angular haya actualizado la vista. */
