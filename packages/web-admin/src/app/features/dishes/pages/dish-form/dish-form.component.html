@@ -9,7 +9,7 @@
   </div>
 
   @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
+    <div #alertaError class="alert-error" role="alert" tabindex="-1">{{ error() }}</div>
   }
 
   <form class="card form-card" (ngSubmit)="onSubmit()" novalidate>

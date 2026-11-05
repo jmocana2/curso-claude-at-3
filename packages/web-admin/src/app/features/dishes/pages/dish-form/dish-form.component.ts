@@ -33,6 +33,7 @@ export class DishFormComponent implements OnInit {
   private readonly campoCantidad = viewChild.required<ElementRef<HTMLInputElement>>('campoCantidad')
   private readonly campoNombre = viewChild.required<ElementRef<HTMLInputElement>>('campoNombre')
   private readonly campoPrecio = viewChild.required<ElementRef<HTMLInputElement>>('campoPrecio')
+  private readonly alertaError = viewChild<ElementRef<HTMLDivElement>>('alertaError')
 
   isEditing = false
   dishId: string | null = null
@@ -158,8 +159,8 @@ export class DishFormComponent implements OnInit {
   }
 
   /** Mueve el foco al elemento indicado cuando Angular haya actualizado la vista. */
-  private enfocarTrasRender(obtenerElemento: () => HTMLElement): void {
-    afterNextRender(() => obtenerElemento().focus(), { injector: this.injector })
+  private enfocarTrasRender(obtenerElemento: () => HTMLElement | undefined): void {
+    afterNextRender(() => obtenerElemento()?.focus(), { injector: this.injector })
   }
 
   getIngredientName(ingredientId: string): string {
@@ -197,6 +198,7 @@ export class DishFormComponent implements OnInit {
       this.router.navigate(['/restaurants', this.restaurantId, 'dishes'])
     } catch (err: any) {
       this.error.set(err?.error?.message ?? 'Error al guardar el plato.')
+      this.enfocarTrasRender(() => this.alertaError()?.nativeElement)
     } finally {
       this.loading.set(false)
     }

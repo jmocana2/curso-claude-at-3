@@ -150,3 +150,24 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   await expect(precio).toHaveAttribute('aria-invalid', 'true')
   await expect(precio).toHaveAccessibleDescription('El precio debe ser mayor que 0.')
 })
+
+test('un error de la API se anuncia y recibe el foco', async ({ page }) => {
+  await page.route('**/api/v1/restaurants/*/dishes', ruta =>
+    ruta.request().method() === 'POST'
+      ? ruta.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ message: 'Error simulado del servidor' }) })
+      : ruta.continue()
+  )
+  await iniciar_sesion_con_teclado(page)
+  await page.goto(URL_NUEVO_PLATO)
+
+  await tabular_hasta(page, page.getByLabel('Nombre del plato'))
+  await page.keyboard.type('Plato con error')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type('5')
+  await page.keyboard.press('Enter')
+
+  const alerta = page.getByRole('alert')
+  await expect(alerta).toHaveText('Error simulado del servidor')
+  await expect(alerta).toBeFocused()
+})
