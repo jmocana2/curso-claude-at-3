@@ -85,14 +85,14 @@
     </fieldset>
 
     <div class="form-actions">
-      <div class="btn btn-secondary" [routerLink]="listUrl">Cancelar</div>
-      <div class="btn btn-primary" (click)="onSubmit()">
+      <a class="btn btn-secondary" [routerLink]="listUrl">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
         @if (loading()) {
           Guardando...
         } @else {
           Guardar
         }
-      </div>
+      </button>
     </div>
   </form>
 </div>
