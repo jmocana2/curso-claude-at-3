@@ -1,7 +1,9 @@
 import { test, expect, type Locator, type Page } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 const EMAIL_ADMIN = 'admin@resttek.com'
 const URL_NUEVO_PLATO = '/restaurants/rest-1/dishes/new'
+const ETIQUETAS_WCAG_AA = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 /** Pulsa Tab (o Shift+Tab) hasta que el foco llegue al elemento indicado. */
 async function tabular_hasta(page: Page, destino: Locator, { atras = false, max = 40 } = {}): Promise<void> {
@@ -39,6 +41,14 @@ async function anadir_ingrediente(page: Page, { posicion, cantidad }: { posicion
   await page.keyboard.press('Tab')
   await expect(page.getByRole('button', { name: 'Añadir ingrediente' })).toBeFocused()
   await page.keyboard.press('Enter')
+}
+
+/** Analiza con axe solo el formulario de platos (el resto de pantallas queda fuera de la issue). */
+async function analizar_formulario_con_axe(page: Page) {
+  const resultado = await new AxeBuilder({ page }).include('app-dish-form').withTags(ETIQUETAS_WCAG_AA).analyze()
+  // Garantiza que axe ha analizado el formulario y no un selector vacío
+  expect(resultado.passes.length).toBeGreaterThan(0)
+  return resultado.violations.map(v => `${v.id} (${v.impact}): ${v.nodes.map(n => n.target.join(' ')).join(', ')}`)
 }
 
 /** Pausa breve para que el vídeo se pueda seguir. */
@@ -283,4 +293,50 @@ test('vídeo: recorrido completo del formulario de platos solo con teclado', asy
   expect(envios_a_la_api).toHaveLength(1)
   await fila.scrollIntoViewIfNeeded()
   await pausa(page, 2000)
+})
+
+test('axe no encuentra incidencias WCAG 2.2 AA en el formulario de nuevo plato', async ({ page }) => {
+  await iniciar_sesion_con_teclado(page)
+  await page.goto(URL_NUEVO_PLATO)
+  await expect(page.getByLabel('Nombre del plato')).toBeVisible()
+  expect(await analizar_formulario_con_axe(page)).toEqual([])
+
+  // También con los errores de validación visibles
+  await page.getByRole('button', { name: 'Guardar' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('alert')).toBeVisible()
+  expect(await analizar_formulario_con_axe(page)).toEqual([])
+})
+
+test('el modo edición se usa solo con teclado y pasa axe', async ({ page }) => {
+  await iniciar_sesion_con_teclado(page)
+
+  // Plato propio creado por API para no modificar los datos del seed
+  const token = await page.evaluate(() => localStorage.getItem('auth_token'))
+  const respuesta = await page.request.post('/api/v1/restaurants/rest-1/dishes', {
+    headers: { Authorization: `Bearer ${token}` },
+    data: { name: `Plato a editar ${Date.now()}`, description: null, price: 7, category: 'postre', available: true, ingredients: [] }
+  })
+  expect(respuesta.ok()).toBeTruthy()
+  const plato = await respuesta.json()
+
+  await page.goto(`/restaurants/rest-1/dishes/${plato.id}/edit`)
+  await expect(page.getByRole('heading', { level: 1, name: 'Editar plato' })).toBeVisible()
+  const nombre = page.getByLabel('Nombre del plato')
+  await expect(nombre).toHaveValue(plato.name)
+  expect(await analizar_formulario_con_axe(page)).toEqual([])
+
+  const nombre_editado = `${plato.name} editado`
+  await tabular_hasta(page, nombre)
+  await page.keyboard.press('End')
+  await page.keyboard.type(' editado')
+  const ingredientes = page.getByRole('group', { name: 'Ingredientes del plato' })
+  await tabular_hasta(page, page.getByLabel('Ingrediente a añadir'))
+  await anadir_ingrediente(page, { posicion: 1, cantidad: '1' })
+  await expect(ingredientes.getByRole('listitem')).toHaveCount(1)
+  await tabular_hasta(page, page.getByRole('button', { name: 'Guardar' }))
+  await page.keyboard.press('Enter')
+
+  await expect(page).toHaveURL(/\/restaurants\/rest-1\/dishes$/)
+  await expect(page.getByRole('row').filter({ hasText: nombre_editado })).toBeVisible()
 })

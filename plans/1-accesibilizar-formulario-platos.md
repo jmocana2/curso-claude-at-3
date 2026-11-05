@@ -69,7 +69,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 19. Test e2e, parte 3 (errores): vaciar el nombre y poner precio 0, enviar con `Enter` y comprobar que se muestran los mensajes, `aria-invalid="true"` y que el foco está en el primer campo inválido.
 - [x] 20. Test e2e, parte 4 (éxito): corregir los campos, enviar con `Enter`, comprobar la navegación a `/restaurants/rest-1/dishes` y que el nuevo plato aparece en la tabla. Añadir pausas breves (`waitForTimeout`) para que el vídeo sea legible.
 - [x] 21. Ejecutar `npm run seed` + `npm run e2e -w @resttek/web-admin`, verificar que pasa en verde y copiar el vídeo generado a `docs/videos/dish-form-teclado.webm`.
-- [ ] 22. Probar también el modo edición (`/:id/edit`) manualmente solo con teclado y revisar el formulario con axe DevTools / Lighthouse (sin incidencias críticas ni serias).
+- [x] 22. Probar también el modo edición (`/:id/edit`) manualmente solo con teclado y revisar el formulario con axe DevTools / Lighthouse (sin incidencias críticas ni serias).
 - [ ] 23. `npm run build -w @resttek/web-admin` sin errores y `npm test` (API) en verde.
 
 ## Criterios de aceptación
@@ -111,4 +111,5 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - Al quitar un ingrediente el foco va al siguiente botón "Quitar", al anterior si se quitó el último, y al selector si no quedan (durante la implementación) — evita que el foco salte lejos cuando se quita el último de la lista.
 - La región viva usa `role="status"` (equivale a `aria-live="polite"`) y se añade también el aviso "Ese ingrediente ya está en el plato." (durante la implementación) — antes un duplicado se ignoraba en silencio, sin feedback para el usuario.
 - Nuevo token `--red-text: #f87171` para texto de error (durante la implementación) — `--red` (#ef4444) solo da 4.41:1 sobre la tarjeta y 3.79:1 dentro de la alerta; `#f87171` da 6:1 y 5.15:1. El icono de quitar ingrediente pasa de `--text-muted` (2.45:1) a `--text-secondary` (4.74:1) por WCAG 1.4.11, y los campos con `aria-invalid` llevan borde rojo como refuerzo visual.
+- La revisión de la tarea 22 se automatiza con `@axe-core/playwright` (etiquetas WCAG 2.0/2.1/2.2 A y AA, limitada a `app-dish-form`) en lugar de axe DevTools manual (durante la implementación) — es repetible y queda como test de regresión. El modo edición se prueba con un plato creado por API para no alterar los datos del seed.
 - No se añade eslint/prettier a `web-admin` — no están configurados y queda fuera del alcance de la issue.
