@@ -68,7 +68,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 18. Test e2e, parte 2 (ingredientes): seleccionar dos ingredientes con flechas, fijar cantidad, añadirlos con `Enter`/`Espacio`, y quitar uno de ellos con el teclado; comprobar que el chip desaparece y el foco queda en un elemento lógico.
 - [x] 19. Test e2e, parte 3 (errores): vaciar el nombre y poner precio 0, enviar con `Enter` y comprobar que se muestran los mensajes, `aria-invalid="true"` y que el foco está en el primer campo inválido.
 - [x] 20. Test e2e, parte 4 (éxito): corregir los campos, enviar con `Enter`, comprobar la navegación a `/restaurants/rest-1/dishes` y que el nuevo plato aparece en la tabla. Añadir pausas breves (`waitForTimeout`) para que el vídeo sea legible.
-- [ ] 21. Ejecutar `npm run seed` + `npm run e2e -w @resttek/web-admin`, verificar que pasa en verde y copiar el vídeo generado a `docs/videos/dish-form-teclado.webm`.
+- [x] 21. Ejecutar `npm run seed` + `npm run e2e -w @resttek/web-admin`, verificar que pasa en verde y copiar el vídeo generado a `docs/videos/dish-form-teclado.webm`.
 - [ ] 22. Probar también el modo edición (`/:id/edit`) manualmente solo con teclado y revisar el formulario con axe DevTools / Lighthouse (sin incidencias críticas ni serias).
 - [ ] 23. `npm run build -w @resttek/web-admin` sin errores y `npm test` (API) en verde.
 
