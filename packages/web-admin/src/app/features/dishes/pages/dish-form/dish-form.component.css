@@ -37,9 +37,25 @@ textarea.form-control {
 }
 
 .ingredients-section {
-  margin-top: 24px;
-  padding-top: 20px;
+  margin: 24px 0 0;
+  padding: 20px 0 0;
+  border: 0;
   border-top: 1px solid var(--border-color);
+  min-width: 0;
+}
+
+.ingredients-section legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.ingredients-section legend + * {
+  clear: both;
 }
 
 .ingredients-section h3 {
@@ -50,6 +66,8 @@ textarea.form-control {
 }
 
 .ingredient-chips {
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

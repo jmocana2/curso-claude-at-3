@@ -39,4 +39,7 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   await expect(page.getByRole('link', { name: 'Volver a la lista de platos' })).toBeFocused()
   await page.keyboard.press('Tab')
   await expect(nombre).toBeFocused()
+
+  // La sección de ingredientes es un grupo con nombre
+  await expect(page.getByRole('group', { name: 'Ingredientes del plato' })).toBeVisible()
 })

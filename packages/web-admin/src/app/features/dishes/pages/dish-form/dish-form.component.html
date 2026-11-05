@@ -47,20 +47,20 @@
       </div>
     </div>
 
-    <div class="ingredients-section">
-      <div class="fake-subtitle">Ingredientes del plato</div>
+    <fieldset class="ingredients-section">
+      <legend>Ingredientes del plato</legend>
 
       @if (form.ingredients.length > 0) {
-        <div class="ingredient-chips">
+        <ul class="ingredient-chips">
           @for (ing of form.ingredients; track ing.ingredientId) {
-            <div class="ingredient-chip">
+            <li class="ingredient-chip">
               <span>{{ getIngredientName(ing.ingredientId) }} — {{ ing.quantity }}</span>
               <div class="chip-remove" (click)="removeIngredient(ing.ingredientId)">
                 <lucide-icon name="trash-2" [size]="12"></lucide-icon>
               </div>
-            </div>
+            </li>
           }
-        </div>
+        </ul>
       }
 
       <div class="add-ingredient-row">
@@ -77,7 +77,7 @@
           <lucide-icon name="plus" [size]="14"></lucide-icon>
         </div>
       </div>
-    </div>
+    </fieldset>
 
     <div class="form-actions">
       <div class="btn btn-secondary" [routerLink]="listUrl">Cancelar</div>
