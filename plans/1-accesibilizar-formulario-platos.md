@@ -74,24 +74,24 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 
 ## Criterios de aceptación
 
-- [ ] Dado el formulario de nuevo/editar plato, cuando se navega con `Tab`, entonces el orden es: volver → nombre → precio → categoría → disponible → descripción → (quitar ingrediente…) → select ingrediente → cantidad → añadir → cancelar → guardar, sin trampas de foco.
-- [ ] Todos los elementos interactivos son alcanzables por teclado y activables con `Enter`/`Espacio`; no queda ningún `<div (click)>` en el formulario.
-- [ ] El elemento enfocado muestra siempre un indicador visible con contraste ≥ 3:1 (WCAG 2.4.7 y 2.4.13 orientativo) y no queda oculto por otros elementos (2.4.11).
-- [ ] Cada campo tiene un nombre accesible (`<label>` o `aria-label`) y los botones de solo icono tienen texto alternativo (1.3.1, 4.1.2).
-- [ ] Dado un nombre vacío o un precio ≤ 0, cuando se envía el formulario, entonces no se llama a la API, se muestran los mensajes de error junto a cada campo, se anuncian (`role="alert"`), los campos tienen `aria-invalid="true"` y el foco va al primer campo inválido (3.3.1, 3.3.3).
-- [ ] Al añadir o quitar un ingrediente el cambio se anuncia por la región `aria-live` y el foco queda en un elemento lógico (no se pierde en `<body>`).
-- [ ] El botón de quitar ingrediente mide al menos 24×24 px (2.5.8).
-- [ ] Dado un formulario válido, cuando se envía con `Enter`, entonces se crea el plato y se navega a la lista, donde aparece el nuevo plato.
-- [ ] Existe `docs/videos/dish-form-teclado.webm`, grabado con Playwright, en el que se ve: navegación solo con teclado, modificación de datos, añadir y quitar un ingrediente, envío incompleto con errores visibles y creación correcta del plato que aparece en la lista.
-- [ ] `npm run e2e -w @resttek/web-admin` pasa en verde.
+- [x] Dado el formulario de nuevo/editar plato, cuando se navega con `Tab`, entonces el orden es: volver → nombre → precio → categoría → disponible → descripción → (quitar ingrediente…) → select ingrediente → cantidad → añadir → cancelar → guardar, sin trampas de foco.
+- [x] Todos los elementos interactivos son alcanzables por teclado y activables con `Enter`/`Espacio`; no queda ningún `<div (click)>` en el formulario.
+- [x] El elemento enfocado muestra siempre un indicador visible con contraste ≥ 3:1 (WCAG 2.4.7 y 2.4.13 orientativo) y no queda oculto por otros elementos (2.4.11).
+- [x] Cada campo tiene un nombre accesible (`<label>` o `aria-label`) y los botones de solo icono tienen texto alternativo (1.3.1, 4.1.2).
+- [x] Dado un nombre vacío o un precio ≤ 0, cuando se envía el formulario, entonces no se llama a la API, se muestran los mensajes de error junto a cada campo, se anuncian (`role="alert"`), los campos tienen `aria-invalid="true"` y el foco va al primer campo inválido (3.3.1, 3.3.3).
+- [x] Al añadir o quitar un ingrediente el cambio se anuncia por la región `aria-live` y el foco queda en un elemento lógico (no se pierde en `<body>`).
+- [x] El botón de quitar ingrediente mide al menos 24×24 px (2.5.8).
+- [x] Dado un formulario válido, cuando se envía con `Enter`, entonces se crea el plato y se navega a la lista, donde aparece el nuevo plato.
+- [x] Existe `docs/videos/dish-form-teclado.webm`, grabado con Playwright, en el que se ve: navegación solo con teclado, modificación de datos, añadir y quitar un ingrediente, envío incompleto con errores visibles y creación correcta del plato que aparece en la lista.
+- [x] `npm run e2e -w @resttek/web-admin` pasa en verde.
 - [ ] `npm run build -w @resttek/web-admin` compila sin errores (no hay eslint ni prettier configurados en los frontends).
-- [ ] Los tests de vitest de la API siguen pasando (`npm test`).
+- [x] Los tests de vitest de la API siguen pasando (`npm test`).
 
 ## Dudas y decisiones
 
 **Dudas abiertas**
 
-- Ninguna (resueltas por el usuario, ver decisiones).
+- **Tarea 23 / build**: `npm run build -w @resttek/web-admin` falla en el repo por un problema previo, ajeno a esta issue: `.pnp.cjs` y `.pnp.loader.mjs` (Yarn PnP) están versionados desde el commit inicial y el esbuild de Angular intenta resolver los paquetes desde la caché de Yarn Berry, que no existe (el proyecto usa npm). En un worktree sin esos ficheros la build de producción compila sin errores ni avisos, y el dev server recompila sin errores. ¿Se eliminan `.pnp.cjs`/`.pnp.loader.mjs` del repo en otra issue? `npm test` (API) pasa: 66 tests.
 
 **Respuestas del usuario**
 
