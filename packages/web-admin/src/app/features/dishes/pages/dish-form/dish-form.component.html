@@ -56,6 +56,7 @@
             <li class="ingredient-chip">
               <span>{{ getIngredientName(ing.ingredientId) }} — {{ ing.quantity }}</span>
               <button
+                #botonQuitar
                 type="button"
                 class="chip-remove"
                 [attr.aria-label]="'Quitar ' + getIngredientName(ing.ingredientId)"
@@ -70,7 +71,7 @@
 
       <div class="add-ingredient-row">
         <label for="dish-new-ingredient" class="visually-hidden">Ingrediente a añadir</label>
-        <select id="dish-new-ingredient" class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
+        <select #selectorIngrediente id="dish-new-ingredient" class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
           <option value="">Seleccionar ingrediente</option>
           @for (i of ingredientStore.ingredients(); track i.id) {
             <option [value]="i.id">{{ i.name }} ({{ i.unit }})</option>

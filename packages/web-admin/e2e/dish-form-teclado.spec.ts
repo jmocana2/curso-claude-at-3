@@ -25,6 +25,22 @@ async function esperar_foco_visible(destino: Locator): Promise<void> {
   expect(contorno.ancho).toBeGreaterThanOrEqual(2)
 }
 
+/**
+ * Con el foco en el selector de ingredientes, elige la opción en la posición
+ * indicada con las flechas, escribe la cantidad y pulsa "Añadir ingrediente".
+ */
+async function anadir_ingrediente(page: Page, { posicion, cantidad }: { posicion: number; cantidad: string }): Promise<void> {
+  await expect(page.getByLabel('Ingrediente a añadir')).toBeFocused()
+  for (let i = 0; i < posicion; i++) await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Tab')
+  await expect(page.getByLabel('Cantidad del ingrediente')).toBeFocused()
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type(cantidad)
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('button', { name: 'Añadir ingrediente' })).toBeFocused()
+  await page.keyboard.press('Enter')
+}
+
 async function iniciar_sesion_con_teclado(page: Page): Promise<void> {
   await page.goto('/login')
   await tabular_hasta(page, page.getByLabel('Correo electrónico'))
@@ -56,29 +72,33 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   const ingredientes = page.getByRole('group', { name: 'Ingredientes del plato' })
   await expect(ingredientes).toBeVisible()
 
-  // Añadir un ingrediente solo con teclado
+  // Añadir dos ingredientes solo con teclado; tras añadir, el foco vuelve al selector
   const selector_ingrediente = page.getByLabel('Ingrediente a añadir')
   const cantidad = page.getByLabel('Cantidad del ingrediente')
   const boton_anadir = page.getByRole('button', { name: 'Añadir ingrediente' })
+  const chips = ingredientes.getByRole('listitem')
   await tabular_hasta(page, selector_ingrediente)
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('Tab')
-  await expect(cantidad).toBeFocused()
-  await page.keyboard.press('Control+A')
-  await page.keyboard.type('2')
-  await page.keyboard.press('Tab')
-  await expect(boton_anadir).toBeFocused()
-  await page.keyboard.press('Enter')
-  await expect(ingredientes.getByRole('listitem')).toHaveCount(1)
+  await anadir_ingrediente(page, { posicion: 1, cantidad: '2' })
+  await expect(chips).toHaveCount(1)
+  await expect(selector_ingrediente).toBeFocused()
+  await anadir_ingrediente(page, { posicion: 2, cantidad: '3' })
+  await expect(chips).toHaveCount(2)
+  await expect(selector_ingrediente).toBeFocused()
 
-  // Quitar el ingrediente solo con teclado; el botón mide al menos 24x24 px (WCAG 2.5.8)
-  const boton_quitar = ingredientes.getByRole('button', { name: /^Quitar / })
-  await tabular_hasta(page, boton_quitar, { atras: true })
-  const caja = await boton_quitar.boundingBox()
+  // Quitar ingredientes solo con teclado; el botón mide al menos 24x24 px (WCAG 2.5.8)
+  const botones_quitar = ingredientes.getByRole('button', { name: /^Quitar / })
+  await tabular_hasta(page, botones_quitar.first(), { atras: true })
+  const caja = await botones_quitar.first().boundingBox()
   expect(caja?.width).toBeGreaterThanOrEqual(24)
   expect(caja?.height).toBeGreaterThanOrEqual(24)
   await page.keyboard.press('Enter')
-  await expect(ingredientes.getByRole('listitem')).toHaveCount(0)
+  await expect(chips).toHaveCount(1)
+  // El foco pasa al siguiente botón "Quitar"
+  await expect(botones_quitar.first()).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(chips).toHaveCount(0)
+  // Sin ingredientes, el foco vuelve al selector
+  await expect(selector_ingrediente).toBeFocused()
 
   // Tras "Añadir ingrediente" vienen "Cancelar" (enlace) y "Guardar" (envío del formulario)
   await tabular_hasta(page, boton_anadir)

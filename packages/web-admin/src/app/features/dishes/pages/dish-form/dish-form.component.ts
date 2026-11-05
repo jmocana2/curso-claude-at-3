@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { afterNextRender, Component, ElementRef, inject, Injector, OnInit, signal, viewChild, viewChildren } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { LucideAngularModule } from 'lucide-angular'
@@ -21,6 +21,10 @@ export class DishFormComponent implements OnInit {
   readonly ingredientStore = inject(IngredientStore)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
+  private readonly injector = inject(Injector)
+
+  private readonly selectorIngrediente = viewChild.required<ElementRef<HTMLSelectElement>>('selectorIngrediente')
+  private readonly botonesQuitar = viewChildren<ElementRef<HTMLButtonElement>>('botonQuitar')
 
   isEditing = false
   dishId: string | null = null
@@ -105,10 +109,23 @@ export class DishFormComponent implements OnInit {
     ]
     this.newIngredientId = ''
     this.newIngredientQty = 1
+    this.enfocarTrasRender(() => this.selectorIngrediente().nativeElement)
   }
 
   removeIngredient(ingredientId: string): void {
+    const indice = this.form.ingredients.findIndex(i => i.ingredientId === ingredientId)
     this.form.ingredients = this.form.ingredients.filter(i => i.ingredientId !== ingredientId)
+    // El foco pasa al siguiente botón "Quitar", al anterior si era el último, o al selector si no quedan
+    this.enfocarTrasRender(() => {
+      const botones = this.botonesQuitar()
+      const boton = botones[indice] ?? botones[indice - 1]
+      return boton?.nativeElement ?? this.selectorIngrediente().nativeElement
+    })
+  }
+
+  /** Mueve el foco al elemento indicado cuando Angular haya actualizado la vista. */
+  private enfocarTrasRender(obtenerElemento: () => HTMLElement): void {
+    afterNextRender(() => obtenerElemento().focus(), { injector: this.injector })
   }
 
   getIngredientName(ingredientId: string): string {
