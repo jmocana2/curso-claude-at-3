@@ -41,6 +41,11 @@ async function anadir_ingrediente(page: Page, { posicion, cantidad }: { posicion
   await page.keyboard.press('Enter')
 }
 
+/** Pausa breve para que el vídeo se pueda seguir. */
+async function pausa(page: Page, ms = 700): Promise<void> {
+  await page.waitForTimeout(ms)
+}
+
 async function iniciar_sesion_con_teclado(page: Page): Promise<void> {
   await page.goto('/login')
   await tabular_hasta(page, page.getByLabel('Correo electrónico'))
@@ -52,7 +57,7 @@ async function iniciar_sesion_con_teclado(page: Page): Promise<void> {
   await page.waitForURL(url => !url.pathname.startsWith('/login'))
 }
 
-test('el formulario de platos se completa solo con el teclado', async ({ page }) => {
+test('estructura, foco y validación del formulario con teclado', async ({ page }) => {
   await iniciar_sesion_con_teclado(page)
 
   await page.goto(URL_NUEVO_PLATO)
@@ -170,4 +175,48 @@ test('un error de la API se anuncia y recibe el foco', async ({ page }) => {
   const alerta = page.getByRole('alert')
   await expect(alerta).toHaveText('Error simulado del servidor')
   await expect(alerta).toBeFocused()
+})
+
+test('vídeo: recorrido completo del formulario de platos solo con teclado', async ({ page }) => {
+  const nombre_plato = `Ensalada de la huerta ${Date.now()}`
+  await iniciar_sesion_con_teclado(page)
+  await page.goto(URL_NUEVO_PLATO)
+  await expect(page.getByRole('heading', { level: 1, name: 'Nuevo plato' })).toBeVisible()
+  await pausa(page)
+
+  // 1. Rellenar y modificar datos
+  const nombre = page.getByLabel('Nombre del plato')
+  const precio = page.getByLabel('Precio (€)')
+  const categoria = page.getByLabel('Categoría')
+  const disponible = page.getByLabel('Disponible')
+  const descripcion = page.getByLabel('Descripción (opcional)')
+  await tabular_hasta(page, nombre)
+  await page.keyboard.type('Ensalada', { delay: 60 })
+  await pausa(page)
+  await page.keyboard.press('Control+A')
+  await page.keyboard.press('Backspace')
+  await page.keyboard.type(nombre_plato, { delay: 40 })
+  await page.keyboard.press('Tab')
+  await expect(precio).toBeFocused()
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type('9.5', { delay: 60 })
+  await page.keyboard.press('Tab')
+  await expect(categoria).toBeFocused()
+  await page.keyboard.press('ArrowUp')
+  await pausa(page, 400)
+  await page.keyboard.press('Tab')
+  await expect(disponible).toBeFocused()
+  await page.keyboard.press('ArrowDown')
+  await pausa(page, 400)
+  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('Tab')
+  await expect(descripcion).toBeFocused()
+  await page.keyboard.type('Lechuga, tomate y aceite de oliva.', { delay: 30 })
+  await pausa(page)
+
+  await expect(nombre).toHaveValue(nombre_plato)
+  await expect(precio).toHaveValue('9.5')
+  await expect(categoria.locator('option:checked')).toHaveText('Entrante')
+  await expect(disponible.locator('option:checked')).toHaveText('Sí')
+  await expect(descripcion).toHaveValue('Lechuga, tomate y aceite de oliva.')
 })
