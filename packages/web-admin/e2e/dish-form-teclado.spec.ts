@@ -241,4 +241,27 @@ test('vídeo: recorrido completo del formulario de platos solo con teclado', asy
   await expect(chips.first()).toContainText(nombre_segundo!.split(' — ')[0])
   await expect(botones_quitar.first()).toBeFocused()
   await pausa(page)
+
+  // 3. Enviar el formulario incompleto (sin nombre y con precio 0) para ver los errores
+  const envios_a_la_api: string[] = []
+  page.on('request', peticion => {
+    if (peticion.method() === 'POST' && peticion.url().includes('/dishes')) envios_a_la_api.push(peticion.url())
+  })
+  await tabular_hasta(page, nombre, { atras: true })
+  await page.keyboard.press('Control+A')
+  await page.keyboard.press('Backspace')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type('0')
+  await pausa(page, 400)
+  await page.keyboard.press('Enter')
+
+  await expect(page.getByRole('alert')).toContainText('2 errores')
+  await expect(nombre).toBeFocused()
+  await expect(nombre).toHaveAttribute('aria-invalid', 'true')
+  await expect(precio).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByText('El nombre del plato es obligatorio.').first()).toBeVisible()
+  await expect(page.getByText('El precio debe ser mayor que 0.').first()).toBeVisible()
+  expect(envios_a_la_api).toHaveLength(0)
+  await pausa(page, 1500)
 })
