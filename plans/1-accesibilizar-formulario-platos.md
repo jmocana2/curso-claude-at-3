@@ -54,7 +54,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 4. Estructura semántica: `fake-title` → `<h1>`, `<form (ngSubmit)="onSubmit()" novalidate>`, cada `fake-label` → `<label for="dish-…">` con `id` en su control; añadir `<label class="visually-hidden">` para el select de nuevo ingrediente y la cantidad. Añadir `.visually-hidden` en `styles.css`.
 - [x] 5. Enlace "volver": `aria-label="Volver a la lista de platos"` e icono `aria-hidden="true"`.
 - [x] 6. Sección de ingredientes: envolver en `<fieldset>` con `<legend>Ingredientes del plato</legend>` y la lista de chips como `<ul>/<li>`.
-- [ ] 7. Botón añadir ingrediente: `<div>` → `<button type="button" aria-label="Añadir ingrediente">`; icono `aria-hidden`.
+- [x] 7. Botón añadir ingrediente: `<div>` → `<button type="button" aria-label="Añadir ingrediente">`; icono `aria-hidden`.
 - [ ] 8. Botón quitar ingrediente: `<div>` → `<button type="button" [attr.aria-label]="'Quitar ' + nombre">`; tamaño mínimo 24×24 px.
 - [ ] 9. Botones de acción: "Cancelar" → `<a [routerLink]="listUrl" class="btn btn-secondary">`, "Guardar" → `<button type="submit" class="btn btn-primary" [disabled]="loading()">`. Comprobar que Enter en un campo de texto envía el formulario.
 - [ ] 10. Foco visible: regla global `:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }` para `a`, `button`, `.btn` y `.form-control` (quitar el efecto de `button { outline: none }`); verificar contraste ≥ 3:1 del indicador sobre `--bg-card`.

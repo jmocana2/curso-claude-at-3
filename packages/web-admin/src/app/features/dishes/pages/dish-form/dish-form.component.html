@@ -73,9 +73,9 @@
         </select>
         <label for="dish-new-ingredient-qty" class="visually-hidden">Cantidad del ingrediente</label>
         <input id="dish-new-ingredient-qty" type="number" class="form-control qty-input" [(ngModel)]="newIngredientQty" name="newIngredientQty" placeholder="Cant." />
-        <div class="btn btn-secondary btn-sm" (click)="addIngredient()">
-          <lucide-icon name="plus" [size]="14"></lucide-icon>
-        </div>
+        <button type="button" class="btn btn-secondary btn-sm" aria-label="Añadir ingrediente" (click)="addIngredient()">
+          <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
+        </button>
       </div>
     </fieldset>
 

@@ -41,5 +41,21 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   await expect(nombre).toBeFocused()
 
   // La sección de ingredientes es un grupo con nombre
-  await expect(page.getByRole('group', { name: 'Ingredientes del plato' })).toBeVisible()
+  const ingredientes = page.getByRole('group', { name: 'Ingredientes del plato' })
+  await expect(ingredientes).toBeVisible()
+
+  // Añadir un ingrediente solo con teclado
+  const selector_ingrediente = page.getByLabel('Ingrediente a añadir')
+  const cantidad = page.getByLabel('Cantidad del ingrediente')
+  const boton_anadir = page.getByRole('button', { name: 'Añadir ingrediente' })
+  await tabular_hasta(page, selector_ingrediente)
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Tab')
+  await expect(cantidad).toBeFocused()
+  await page.keyboard.press('Control+A')
+  await page.keyboard.type('2')
+  await page.keyboard.press('Tab')
+  await expect(boton_anadir).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(ingredientes.getByRole('listitem')).toHaveCount(1)
 })
