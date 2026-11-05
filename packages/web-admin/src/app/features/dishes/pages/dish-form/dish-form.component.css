@@ -89,10 +89,14 @@ textarea.form-control {
 .chip-remove {
   background: transparent;
   color: var(--text-muted);
-  padding: 2px;
+  padding: 0;
+  min-width: 24px;
+  min-height: 24px;
   border-radius: 50%;
   transition: all var(--transition);
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chip-remove:hover {

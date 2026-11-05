@@ -7,7 +7,8 @@ const URL_NUEVO_PLATO = '/restaurants/rest-1/dishes/new'
 async function tabular_hasta(page: Page, destino: Locator, { atras = false, max = 40 } = {}): Promise<void> {
   const tecla = atras ? 'Shift+Tab' : 'Tab'
   for (let i = 0; i < max; i++) {
-    if (await destino.evaluate(el => el === document.activeElement).catch(() => false)) return
+    const existe = (await destino.count()) === 1
+    if (existe && (await destino.evaluate(el => el === document.activeElement))) return
     await page.keyboard.press(tecla)
   }
   await expect(destino).toBeFocused()
@@ -58,4 +59,13 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   await expect(boton_anadir).toBeFocused()
   await page.keyboard.press('Enter')
   await expect(ingredientes.getByRole('listitem')).toHaveCount(1)
+
+  // Quitar el ingrediente solo con teclado; el botón mide al menos 24x24 px (WCAG 2.5.8)
+  const boton_quitar = ingredientes.getByRole('button', { name: /^Quitar / })
+  await tabular_hasta(page, boton_quitar, { atras: true })
+  const caja = await boton_quitar.boundingBox()
+  expect(caja?.width).toBeGreaterThanOrEqual(24)
+  expect(caja?.height).toBeGreaterThanOrEqual(24)
+  await page.keyboard.press('Enter')
+  await expect(ingredientes.getByRole('listitem')).toHaveCount(0)
 })

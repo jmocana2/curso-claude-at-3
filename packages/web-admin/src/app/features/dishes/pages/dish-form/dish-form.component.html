@@ -55,9 +55,14 @@
           @for (ing of form.ingredients; track ing.ingredientId) {
             <li class="ingredient-chip">
               <span>{{ getIngredientName(ing.ingredientId) }} — {{ ing.quantity }}</span>
-              <div class="chip-remove" (click)="removeIngredient(ing.ingredientId)">
-                <lucide-icon name="trash-2" [size]="12"></lucide-icon>
-              </div>
+              <button
+                type="button"
+                class="chip-remove"
+                [attr.aria-label]="'Quitar ' + getIngredientName(ing.ingredientId)"
+                (click)="removeIngredient(ing.ingredientId)"
+              >
+                <lucide-icon name="trash-2" [size]="12" aria-hidden="true"></lucide-icon>
+              </button>
             </li>
           }
         </ul>
