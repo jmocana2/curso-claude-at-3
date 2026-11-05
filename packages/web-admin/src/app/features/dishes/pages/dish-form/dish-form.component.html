@@ -4,7 +4,7 @@
       <a [routerLink]="listUrl" class="back-link">
         <lucide-icon name="chevron-left" [size]="18"></lucide-icon>
       </a>
-      <div class="fake-title">{{ pageTitle }}</div>
+      <h1>{{ pageTitle }}</h1>
     </div>
   </div>
 
@@ -12,21 +12,21 @@
     <div class="alert-error">{{ error() }}</div>
   }
 
-  <div class="card form-card">
+  <form class="card form-card" (ngSubmit)="onSubmit()" novalidate>
     <div class="form-grid">
       <div class="form-group">
-        <div class="fake-label">Nombre del plato</div>
-        <input type="text" class="form-control" [(ngModel)]="form.name" name="name" placeholder="Ensalada César" />
+        <label for="dish-name">Nombre del plato</label>
+        <input id="dish-name" type="text" class="form-control" [(ngModel)]="form.name" name="name" placeholder="Ensalada César" />
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Precio (€)</div>
-        <input type="number" class="form-control" [(ngModel)]="form.price" name="price" />
+        <label for="dish-price">Precio (€)</label>
+        <input id="dish-price" type="number" class="form-control" [(ngModel)]="form.price" name="price" />
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Categoría</div>
-        <select class="form-control" [(ngModel)]="form.category" name="category">
+        <label for="dish-category">Categoría</label>
+        <select id="dish-category" class="form-control" [(ngModel)]="form.category" name="category">
           @for (c of categories; track c) {
             <option [value]="c">{{ getCategoryLabel(c) }}</option>
           }
@@ -34,16 +34,16 @@
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Disponible</div>
-        <select class="form-control" [(ngModel)]="form.available" name="available">
+        <label for="dish-available">Disponible</label>
+        <select id="dish-available" class="form-control" [(ngModel)]="form.available" name="available">
           <option [ngValue]="true">Sí</option>
           <option [ngValue]="false">No</option>
         </select>
       </div>
 
       <div class="form-group form-full">
-        <div class="fake-label">Descripción (opcional)</div>
-        <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="3" placeholder="Una deliciosa ensalada con..."></textarea>
+        <label for="dish-description">Descripción (opcional)</label>
+        <textarea id="dish-description" class="form-control" [(ngModel)]="form.description" name="description" rows="3" placeholder="Una deliciosa ensalada con..."></textarea>
       </div>
     </div>
 
@@ -64,13 +64,15 @@
       }
 
       <div class="add-ingredient-row">
-        <select class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
+        <label for="dish-new-ingredient" class="visually-hidden">Ingrediente a añadir</label>
+        <select id="dish-new-ingredient" class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
           <option value="">Seleccionar ingrediente</option>
           @for (i of ingredientStore.ingredients(); track i.id) {
             <option [value]="i.id">{{ i.name }} ({{ i.unit }})</option>
           }
         </select>
-        <input type="number" class="form-control qty-input" [(ngModel)]="newIngredientQty" name="newIngredientQty" placeholder="Cant." />
+        <label for="dish-new-ingredient-qty" class="visually-hidden">Cantidad del ingrediente</label>
+        <input id="dish-new-ingredient-qty" type="number" class="form-control qty-input" [(ngModel)]="newIngredientQty" name="newIngredientQty" placeholder="Cant." />
         <div class="btn btn-secondary btn-sm" (click)="addIngredient()">
           <lucide-icon name="plus" [size]="14"></lucide-icon>
         </div>
@@ -87,5 +89,5 @@
         }
       </div>
     </div>
-  </div>
+  </form>
 </div>
