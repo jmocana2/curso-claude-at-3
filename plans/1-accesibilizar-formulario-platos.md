@@ -52,7 +52,7 @@ Además, se entrega un vídeo grabado con Playwright que demuestra el recorrido 
 - [x] 2. Crear `playwright.config.ts` con `baseURL: 'http://localhost:4200'`, `use: { video: 'on', viewport: 1280×800, launchOptions: { slowMo: 250 } }`, un solo proyecto Chromium y `webServer` que arranque `dev:api` (:3000/health) y `dev:admin` (:4200), reutilizando servidores existentes.
 - [x] 3. Escribir el test e2e en **rojo**: login con teclado (`admin@resttek.com`), ir a `/restaurants/rest-1/dishes/new`, y comprobar con `page.keyboard.press('Tab')` que el foco llega a "Nombre del plato" y que tiene nombre accesible (`getByLabel('Nombre del plato')` enfocado). Debe fallar porque no hay `<label>`.
 - [x] 4. Estructura semántica: `fake-title` → `<h1>`, `<form (ngSubmit)="onSubmit()" novalidate>`, cada `fake-label` → `<label for="dish-…">` con `id` en su control; añadir `<label class="visually-hidden">` para el select de nuevo ingrediente y la cantidad. Añadir `.visually-hidden` en `styles.css`.
-- [ ] 5. Enlace "volver": `aria-label="Volver a la lista de platos"` e icono `aria-hidden="true"`.
+- [x] 5. Enlace "volver": `aria-label="Volver a la lista de platos"` e icono `aria-hidden="true"`.
 - [ ] 6. Sección de ingredientes: envolver en `<fieldset>` con `<legend>Ingredientes del plato</legend>` y la lista de chips como `<ul>/<li>`.
 - [ ] 7. Botón añadir ingrediente: `<div>` → `<button type="button" aria-label="Añadir ingrediente">`; icono `aria-hidden`.
 - [ ] 8. Botón quitar ingrediente: `<div>` → `<button type="button" [attr.aria-label]="'Quitar ' + nombre">`; tamaño mínimo 24×24 px.

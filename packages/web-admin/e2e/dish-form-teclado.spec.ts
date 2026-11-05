@@ -33,4 +33,10 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
   const nombre = page.getByLabel('Nombre del plato')
   await tabular_hasta(page, nombre)
   await expect(nombre).toBeFocused()
+
+  // El elemento anterior al nombre es el enlace de volver, con nombre accesible
+  await page.keyboard.press('Shift+Tab')
+  await expect(page.getByRole('link', { name: 'Volver a la lista de platos' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(nombre).toBeFocused()
 })
