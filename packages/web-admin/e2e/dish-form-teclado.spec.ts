@@ -14,6 +14,17 @@ async function tabular_hasta(page: Page, destino: Locator, { atras = false, max 
   await expect(destino).toBeFocused()
 }
 
+/** Comprueba que el elemento enfocado muestra un contorno de foco visible de al menos 2px. */
+async function esperar_foco_visible(destino: Locator): Promise<void> {
+  await expect(destino).toBeFocused()
+  const contorno = await destino.evaluate(el => {
+    const estilo = getComputedStyle(el)
+    return { estilo: estilo.outlineStyle, ancho: parseFloat(estilo.outlineWidth) }
+  })
+  expect(contorno.estilo).not.toBe('none')
+  expect(contorno.ancho).toBeGreaterThanOrEqual(2)
+}
+
 async function iniciar_sesion_con_teclado(page: Page): Promise<void> {
   await page.goto('/login')
   await tabular_hasta(page, page.getByLabel('Correo electrónico'))
@@ -71,10 +82,11 @@ test('el formulario de platos se completa solo con el teclado', async ({ page })
 
   // Tras "Añadir ingrediente" vienen "Cancelar" (enlace) y "Guardar" (envío del formulario)
   await tabular_hasta(page, boton_anadir)
+  await esperar_foco_visible(boton_anadir)
   await page.keyboard.press('Tab')
-  await expect(page.getByRole('link', { name: 'Cancelar' })).toBeFocused()
+  await esperar_foco_visible(page.getByRole('link', { name: 'Cancelar' }))
   await page.keyboard.press('Tab')
   const boton_guardar = page.getByRole('button', { name: 'Guardar' })
-  await expect(boton_guardar).toBeFocused()
+  await esperar_foco_visible(boton_guardar)
   await expect(boton_guardar).toHaveAttribute('type', 'submit')
 })
