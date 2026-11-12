@@ -17,12 +17,21 @@ export interface CartItem {
   notes: string
 }
 
+export interface SelectedTable {
+  restaurantId: string
+  tableId: string
+  tableNumber: number
+}
+
 @Injectable({ providedIn: 'root' })
 export class CartStore {
   private readonly _items = signal<CartItem[]>([])
   private readonly _restaurantId = signal<string | null>(null)
 
+  private readonly _table = signal<SelectedTable | null>(null)
+
   readonly items = this._items.asReadonly()
+  readonly table = this._table.asReadonly()
   readonly restaurantId = this._restaurantId.asReadonly()
 
   readonly total = computed(() =>
@@ -32,6 +41,10 @@ export class CartStore {
   readonly itemCount = computed(() =>
     this._items().reduce((count, item) => count + item.quantity, 0)
   )
+
+  setTable(table: SelectedTable): void {
+    this._table.set(table)
+  }
 
   addItem(dish: Dish, quantity: number = 1, notes: string = ''): void {
     if (this._restaurantId() && this._restaurantId() !== dish.restaurantId) {
@@ -77,5 +90,6 @@ export class CartStore {
   clear(): void {
     this._items.set([])
     this._restaurantId.set(null)
+    this._table.set(null)
   }
 }
