@@ -39,3 +39,16 @@ export const authorize = (roles: string[]) => {
         next()
     }
 }
+
+/**
+ * Restringe el acceso al restaurante de la ruta (`:restaurantId`): `admin` accede a cualquiera
+ * y el resto de roles solo al restaurante de su token. Debe ir después de `authenticate`.
+ */
+export const authorizeRestaurant = (req: AuthRequest, res: Response, next: NextFunction): void => {
+    const isAllowed = req.user?.role === 'admin' || (req.user && req.user.restaurantId === req.params.restaurantId)
+    if (!isAllowed) {
+        res.status(403).json({ error: 'Forbidden: Restaurant access denied' })
+        return
+    }
+    next()
+}
