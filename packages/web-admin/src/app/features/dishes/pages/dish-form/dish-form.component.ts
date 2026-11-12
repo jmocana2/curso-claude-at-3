@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnInit, signal, viewChild, viewChildren } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { LucideAngularModule } from 'lucide-angular'
@@ -7,6 +7,11 @@ import { DishStore } from '../../store/dish.store'
 import { DishService } from '../../services/dish.service'
 import { IngredientStore } from '../../../ingredients/store/ingredient.store'
 import type { CreateDishDto, DishCategory } from '../../models/dish.model'
+
+export interface ErroresPlato {
+  name?: string
+  price?: string
+}
 
 @Component({
   selector: 'app-dish-form',
@@ -21,12 +26,28 @@ export class DishFormComponent implements OnInit {
   readonly ingredientStore = inject(IngredientStore)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
+  private readonly injector = inject(Injector)
+
+  private readonly selectorIngrediente = viewChild.required<ElementRef<HTMLSelectElement>>('selectorIngrediente')
+  private readonly botonesQuitar = viewChildren<ElementRef<HTMLButtonElement>>('botonQuitar')
+  private readonly campoCantidad = viewChild.required<ElementRef<HTMLInputElement>>('campoCantidad')
+  private readonly campoNombre = viewChild.required<ElementRef<HTMLInputElement>>('campoNombre')
+  private readonly campoPrecio = viewChild.required<ElementRef<HTMLInputElement>>('campoPrecio')
+  private readonly alertaError = viewChild<ElementRef<HTMLDivElement>>('alertaError')
 
   isEditing = false
   dishId: string | null = null
   restaurantId: string = ''
   loading = signal(false)
   error = signal<string | null>(null)
+  /** Texto que se anuncia a los lectores de pantalla al añadir o quitar ingredientes. */
+  anuncio = signal('')
+  /** Errores de validación del formulario, por campo. */
+  errores = signal<ErroresPlato>({})
+  /** Mensajes de error en el orden de los campos, para el resumen. */
+  mensajesError = computed(() => [this.errores().name, this.errores().price].filter((m): m is string => !!m))
+  /** Aviso del bloque de añadir ingrediente, asociado al campo que lo provoca. */
+  errorIngrediente = signal<{ campo: 'ingrediente' | 'cantidad'; mensaje: string } | null>(null)
 
   categories: DishCategory[] = ['entrante', 'principal', 'postre', 'bebida']
 
@@ -95,20 +116,51 @@ export class DishFormComponent implements OnInit {
   }
 
   addIngredient(): void {
-    if (!this.newIngredientId || this.newIngredientQty <= 0) return
-    const exists = this.form.ingredients.find(i => i.ingredientId === this.newIngredientId)
-    if (exists) return
+    if (!this.newIngredientId) {
+      this.mostrarErrorIngrediente('ingrediente', 'Selecciona un ingrediente.')
+      return
+    }
+    if (this.form.ingredients.some(i => i.ingredientId === this.newIngredientId)) {
+      this.mostrarErrorIngrediente('ingrediente', 'Ese ingrediente ya está en el plato.')
+      return
+    }
+    if (!(this.newIngredientQty > 0)) {
+      this.mostrarErrorIngrediente('cantidad', 'La cantidad debe ser mayor que 0.')
+      return
+    }
+    this.errorIngrediente.set(null)
 
     this.form.ingredients = [
       ...this.form.ingredients,
       { ingredientId: this.newIngredientId, quantity: this.newIngredientQty }
     ]
+    this.anuncio.set(`Ingrediente ${this.getIngredientName(this.newIngredientId)} añadido.`)
     this.newIngredientId = ''
     this.newIngredientQty = 1
+    this.enfocarTrasRender(() => this.selectorIngrediente().nativeElement)
   }
 
   removeIngredient(ingredientId: string): void {
+    const indice = this.form.ingredients.findIndex(i => i.ingredientId === ingredientId)
     this.form.ingredients = this.form.ingredients.filter(i => i.ingredientId !== ingredientId)
+    this.anuncio.set(`Ingrediente ${this.getIngredientName(ingredientId)} quitado.`)
+    // El foco pasa al siguiente botón "Quitar", al anterior si era el último, o al selector si no quedan
+    this.enfocarTrasRender(() => {
+      const botones = this.botonesQuitar()
+      const boton = botones[indice] ?? botones[indice - 1]
+      return boton?.nativeElement ?? this.selectorIngrediente().nativeElement
+    })
+  }
+
+  private mostrarErrorIngrediente(campo: 'ingrediente' | 'cantidad', mensaje: string): void {
+    this.errorIngrediente.set({ campo, mensaje })
+    const campoConError = campo === 'ingrediente' ? this.selectorIngrediente() : this.campoCantidad()
+    this.enfocarTrasRender(() => campoConError.nativeElement)
+  }
+
+  /** Mueve el foco al elemento indicado cuando Angular haya actualizado la vista. */
+  private enfocarTrasRender(obtenerElemento: () => HTMLElement | undefined): void {
+    afterNextRender(() => obtenerElemento()?.focus(), { injector: this.injector })
   }
 
   getIngredientName(ingredientId: string): string {
@@ -116,8 +168,26 @@ export class DishFormComponent implements OnInit {
     return ingredient ? `${ingredient.name} (${ingredient.unit})` : ingredientId
   }
 
+  /** Valida el formulario, guarda los errores por campo y devuelve si es válido. */
+  validar(): boolean {
+    const errores: ErroresPlato = {}
+    if (!this.form.name?.trim()) {
+      errores.name = 'El nombre del plato es obligatorio.'
+    }
+    if (!(Number(this.form.price) > 0)) {
+      errores.price = 'El precio debe ser mayor que 0.'
+    }
+    this.errores.set(errores)
+    return Object.keys(errores).length === 0
+  }
+
   async onSubmit(): Promise<void> {
     this.error.set(null)
+    if (!this.validar()) {
+      const primerCampoInvalido = this.errores().name ? this.campoNombre() : this.campoPrecio()
+      this.enfocarTrasRender(() => primerCampoInvalido.nativeElement)
+      return
+    }
     this.loading.set(true)
     try {
       if (this.isEditing && this.dishId) {
@@ -128,6 +198,7 @@ export class DishFormComponent implements OnInit {
       this.router.navigate(['/restaurants', this.restaurantId, 'dishes'])
     } catch (err: any) {
       this.error.set(err?.error?.message ?? 'Error al guardar el plato.')
+      this.enfocarTrasRender(() => this.alertaError()?.nativeElement)
     } finally {
       this.loading.set(false)
     }

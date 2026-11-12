@@ -36,3 +36,7 @@ Thumbs.db
 !.vscode/extensions.json
 
 .yarn/*
+
+# Playwright
+test-results/
+playwright-report/
