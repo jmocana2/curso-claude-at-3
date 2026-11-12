@@ -1,22 +1,25 @@
 ---
 name: plan-feature
-description: Planifica una nueva funcionalidad o el arreglo de un error antes de tocar código, siguiendo la plantilla común del equipo, y guarda el plan en plans/<num_issue>-<breve-descripcion>.md. Úsala cuando pidan planificar, diseñar o preparar una feature, un bug fix o una issue.
-argument-hint: <num_issue> <descripción de la funcionalidad o del error>
-allowed-tools: Read, Glob, Grep, Write, Bash(git log:*), Bash(git status:*)
+description: Planifica una issue de GitHub (por número o URL) antes de tocar código. Obtiene la issue con gh, sigue la plantilla común del equipo, guarda el plan en plans/<num_issue>-<breve-descripcion>.md y lo publica como comentario de la issue. Úsala cuando pidan planificar, diseñar o preparar una feature, un bug fix o una issue.
+argument-hint: <num_issue | url_issue>
+allowed-tools: Read, Glob, Grep, Write, Bash(git log:*), Bash(git status:*), Bash(gh issue view:*), Bash(gh issue comment:*), Bash(gh auth status:*)
 ---
 
 # plan-feature
 
-Genera un plan de implementación con el formato común del equipo. **No implementes nada**: el resultado de esta skill es solo el archivo del plan.
+Genera un plan de implementación con el formato común del equipo a partir de una issue de GitHub. **No implementes nada**: el resultado de esta skill es el archivo del plan y su publicación como comentario en la issue.
 
 Petición del usuario: $ARGUMENTS
 
 ## Pasos
 
-1. **Datos de entrada**
-   - Extrae de la petición el número de issue y la descripción de lo que se pide.
-   - Si falta el número de issue, pregúntalo antes de continuar (no lo inventes).
-   - Clasifica la petición como `feature` o `bug`.
+1. **Obtén la issue con `gh`**
+   - Extrae de la petición el número de issue (`42`, `#42`) o su URL (`https://github.com/<owner>/<repo>/issues/42`).
+   - Si no hay número ni URL, pregúntalo antes de continuar (no lo inventes ni lo deduzcas de la descripción).
+   - Descarga la issue: `gh issue view <num_o_url> --json number,title,body,labels,state,url,comments`. `gh` acepta tanto el número (usa el repo actual) como la URL completa.
+   - Si `gh` falla (no autenticado, issue inexistente, sin acceso), muestra el error, sugiere `gh auth login` si aplica y detente.
+   - Si la issue está cerrada (`state: CLOSED`), avisa y pregunta si continuar.
+   - Usa el título, el cuerpo, las etiquetas y los comentarios como fuente de la petición. Clasifícala como `feature` o `bug` (las etiquetas `bug` / `enhancement` ayudan).
 
 2. **Analiza el código**
    - Lee `CLAUDE.md` y la documentación de `docs/` relacionada con la petición (por ejemplo, `docs/api/api-pagination.md` si afecta a endpoints GET paginados).
@@ -37,4 +40,9 @@ Petición del usuario: $ARGUMENTS
    - `<breve-descripcion>`: kebab-case, minúsculas, sin tildes ni ñ, 2-5 palabras. Ejemplo: `plans/42-paginar-vendehumos.md`.
    - Si el archivo ya existe, pregunta antes de sobrescribirlo.
 
-5. **Resumen final**: muestra la ruta del archivo creado, el número de tareas y las dudas abiertas que necesiten respuesta del usuario.
+5. **Publica el plan en la issue**
+   - Comenta la issue con el contenido del archivo: `gh issue comment <num_o_url> --body-file plans/<num_issue>-<breve-descripcion>.md`. Usa `--body-file` (no `--body`) para no romper el markdown con el escapado de la shell.
+   - Si ya publicaste un plan en esa issue antes (un comentario previo del mismo autor que empieza por el título del plan), pregunta si añadir uno nuevo o editar el último con `gh issue comment <num_o_url> --edit-last --body-file ...`.
+   - Si el comentario falla, informa del error; el archivo local del plan sigue siendo válido.
+
+6. **Resumen final**: muestra la ruta del archivo creado, la URL del comentario publicado, el número de tareas y las dudas abiertas que necesiten respuesta del usuario.

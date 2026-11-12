@@ -37,6 +37,9 @@ Thumbs.db
 
 .yarn/*
 
+# Worktrees de Claude Code
+.claude/worktrees/
+
 # Playwright
 test-results/
 playwright-report/
