@@ -51,7 +51,7 @@ contexts/employee/
 
 `contexts/shared/` no es un bounded context de negocio: contiene el value object `Email` y los middlewares y el `errorHandler` de Express.
 
-### 2. Por capas → `restaurant`, `dish`, `ingredient`, `order`
+### 2. Por capas → `restaurant`, `dish`, `ingredient`, `order`, `table`
 
 El resto de dominios **no** usan bounded contexts. Se organizan en carpetas transversales por tipo de fichero:
 
@@ -122,6 +122,7 @@ Los demás conceptos que podrían ser Value Objects **no están implementados co
 | Unidad de ingrediente | `normalizeIngredientUnit()` en `models/ingredient.model.ts` | kg, g, l, ml, unidad |
 | Categoría de plato | `normalizeDishCategory()` en `models/dish.model.ts` | entrante, principal, postre, bebida |
 | Estado de pedido | `normalizeOrderStatus()` en `models/order.model.ts` | pendiente, preparando, listo, entregado |
+| Estado de mesa | `normalizeTableStatus()` en `models/table.model.ts` | libre, ocupada, reservada |
 | Teléfono | `PHONE_REGEX` dentro de `services/restaurant.service.ts` | `/^\+?[\d\s\-()]{7,20}$/` |
 
 Las funciones `normalizeX()` hacen `trim()` + `toLowerCase()` y lanzan el error de dominio correspondiente si el valor no es válido.
@@ -310,6 +311,26 @@ Todos cuelgan de `/api/v1`. La columna **Roles** indica qué valores de `req.use
 
 Los ingredientes son **más restrictivos** que los platos: solo `admin` puede crear, editar o borrar.
 
+### Mesas
+
+El contrato completo (cuerpos, respuestas y errores) está en [`packages/api/openapi.yml`](../../packages/api/openapi.yml).
+
+| Método | Ruta | Roles |
+| --- | --- | --- |
+| `GET` | `/api/v1/restaurants/:restaurantId/tables` | admin, manager, camarero |
+| `POST` | `/api/v1/restaurants/:restaurantId/tables` | admin |
+| `GET` | `/api/v1/restaurants/:restaurantId/tables/available?people=N` | cliente — solo mesas `libre` con `capacity >= N` |
+| `GET` | `/api/v1/restaurants/:restaurantId/tables/:id` | admin, manager, camarero |
+| `PUT` | `/api/v1/restaurants/:restaurantId/tables/:id` | admin |
+| `DELETE` | `/api/v1/restaurants/:restaurantId/tables/:id` | admin |
+| `PATCH` | `/api/v1/restaurants/:restaurantId/tables/:id/status` | admin, manager, camarero |
+| `POST` | `/api/v1/restaurants/:restaurantId/tables/:id/occupy` | cliente — 409 si la mesa no está `libre` |
+
+- `manager` y `camarero` solo acceden a las mesas de **su** restaurante (`authorizeRestaurant`, 403 si no); `admin` accede a todas.
+- Una mesa de otro restaurante se trata como inexistente (404).
+- El número de mesa es único por restaurante: duplicarlo devuelve 409 `DuplicatedTableNumberError`.
+- `occupy` es atómico (`UPDATE ... WHERE status = 'libre'`): si dos clientes eligen la misma mesa, el segundo recibe 409 `TableNotAvailableError`.
+
 ### Pedidos
 
 | Método | Ruta | Roles |
@@ -324,6 +345,8 @@ Ninguna ruta de pedidos aplica `authorize()`: cualquier usuario autenticado pued
 
 `GET /orders/active` devuelve los pedidos del restaurante que tengan **al menos un ítem** en estado distinto de `entregado`.
 
+Si el pedido incluye `tableId`, la mesa debe existir y pertenecer al `restaurantId` del pedido; si no, 400 y no se crea.
+
 Al crear un pedido, el servicio **expande las cantidades**: un ítem con `quantity: 3` se guarda como 3 filas de `order_items` con `quantity: 1` cada una, para poder seguir el estado de cada unidad por separado.
 
 ---
@@ -336,6 +359,7 @@ Definidos en `contexts/shared/infrastructure/http/middlewares.ts`.
 | --- | --- | --- |
 | `authenticate` | Verifica el JWT de `Authorization: Bearer <token>` y vuelca el payload en `req.user` | 401 |
 | `authorize(roles)` | Comprueba que `req.user.role` está en la lista | 403 |
+| `authorizeRestaurant` | `admin` pasa; el resto solo si `req.user.restaurantId` coincide con `:restaurantId` (de momento solo en las rutas de mesas) | 403 |
 
 Ambos responden directamente, sin pasar por el `errorHandler`.
 

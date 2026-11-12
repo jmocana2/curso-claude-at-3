@@ -17,6 +17,7 @@ Terminología del dominio y conceptos técnicos utilizados en el proyecto Restte
 | **DishIngredient** | Relación entre un plato y un ingrediente, con la cantidad necesaria. |
 | **Order** | Pedido realizado por un cliente. Contiene ítems (platos) y está asociado a un restaurante. |
 | **OrderItem** | Línea de un pedido: un plato con cantidad, notas opcionales y estado. |
+| **Table** | Mesa de un restaurante. Tiene número (único en el restaurante), descripción opcional, capacidad y estado. El cliente la elige antes de ver la carta y su pedido queda asociado a ella. |
 
 Dos particularidades del modelo que conviene tener presentes:
 
@@ -43,6 +44,16 @@ El valor almacenado es `manager`; "gerente" es solo su traducción en la interfa
 | **preparando** | Ítem siendo preparado en cocina. | cocinero |
 | **listo** | Ítem preparado, listo para servir. | cocinero |
 | **entregado** | Ítem entregado al cliente. Desaparece de las vistas activas. | camarero |
+
+### Estados de Mesa
+
+| Estado | Descripción | Quién lo cambia |
+| --- | --- | --- |
+| **libre** | Mesa disponible: aparece al cliente si su capacidad es suficiente. | — (estado inicial), manager o camarero al liberarla |
+| **ocupada** | Mesa en uso por un cliente. | cliente al elegirla, manager o camarero |
+| **reservada** | Mesa apartada; no se ofrece al cliente. | manager o camarero |
+
+La mesa no se libera sola al entregar el pedido: la vuelve a poner en `libre` un empleado. El admin gestiona las mesas (alta, edición, borrado) desde web-admin.
 
 ### Categorías de Platos
 
