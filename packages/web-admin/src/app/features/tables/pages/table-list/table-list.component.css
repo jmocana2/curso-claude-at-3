@@ -1,0 +1,13 @@
+.table-number {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.btn {
+  cursor: pointer;
+}
+
+.badge-ocupada {
+  background: var(--red-glow);
+  color: var(--red-text);
+}
