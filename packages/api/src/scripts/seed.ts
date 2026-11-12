@@ -77,7 +77,7 @@ const seed = async () => {
             { id: randomUUID(), name: 'Aceite de oliva', unit: 'L' },
             { id: randomUUID(), name: 'Ajo', unit: 'kg' },
             { id: randomUUID(), name: 'Albahaca', unit: 'kg' },
-        ]
+        ] as const
 
         for (const ing of ingredientsRest1) {
             await dbConfig.run(`
@@ -132,7 +132,7 @@ const seed = async () => {
             { id: randomUUID(), name: 'Harina', unit: 'kg' },
             { id: randomUUID(), name: 'Levadura', unit: 'kg' },
             { id: randomUUID(), name: 'Tomate triturado', unit: 'kg' },
-        ]
+        ] as const
 
         for (const ing of ingredientsRest2) {
             await dbConfig.run(`
