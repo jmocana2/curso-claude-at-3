@@ -1,0 +1,191 @@
+{
+  "common": {
+    "appName": "RestTek",
+    "dashboard": "Dashboard",
+    "restaurants": "Restaurantes",
+    "dishes": "Platos",
+    "ingredients": "Ingredientes",
+    "employees": "Empleados",
+    "newRestaurant": "Nuevo restaurante",
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "yes": "Sí",
+    "no": "No",
+    "name": "Nombre",
+    "email": "Email",
+    "password": "Contraseña",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "role": "Rol",
+    "category": "Categoría",
+    "available": "Disponible",
+    "currentStock": "Stock actual"
+  },
+  "shell": {
+    "restaurantsSection": "Mis restaurantes",
+    "noRestaurants": "Sin restaurantes",
+    "settings": "Configuración"
+  },
+  "notFound": {
+    "message": "Página no encontrada",
+    "backHome": "Volver al inicio"
+  },
+  "dashboard": {
+    "greeting": "Bienvenido, {{name}}",
+    "subtitle": "Panel de gestión de RestTek",
+    "cards": {
+      "restaurantsDescription": "Gestiona los datos de tus restaurantes"
+    }
+  },
+  "restaurants": {
+    "newTitle": "Nuevo restaurante",
+    "editTitle": "Editar restaurante",
+    "empty": "No hay restaurantes registrados",
+    "owner": "Propietario",
+    "defaultName": "Restaurante",
+    "dashboard": {
+      "subtitle": "Panel de gestión del restaurante",
+      "cards": {
+        "dishesDescription": "Gestiona la carta del restaurante",
+        "ingredientsDescription": "Controla el inventario de ingredientes",
+        "employeesDescription": "Administra el equipo de trabajo"
+      }
+    },
+    "form": {
+      "labels": {
+        "name": "Nombre del restaurante",
+        "ownerFirstName": "Nombre del propietario",
+        "ownerLastName": "Apellido del propietario",
+        "logoUrl": "URL del logo (opcional)"
+      },
+      "placeholders": {
+        "name": "La Trattoria",
+        "email": "info@restaurante.com",
+        "address": "Calle Mayor 10, Madrid",
+        "phone": "+34 612 345 678",
+        "ownerFirstName": "Carlos",
+        "ownerLastName": "García"
+      }
+    },
+    "errors": {
+      "loadAll": "No se pudieron cargar los restaurantes.",
+      "loadOne": "No se pudo cargar el restaurante.",
+      "save": "Error al guardar el restaurante."
+    }
+  },
+  "dishes": {
+    "newDish": "Nuevo plato",
+    "editTitle": "Editar plato",
+    "empty": "No hay platos para este restaurante",
+    "price": "Precio",
+    "confirmDelete": "¿Estás seguro de eliminar este plato?",
+    "categories": {
+      "entrante": "Entrante",
+      "principal": "Principal",
+      "postre": "Postre",
+      "bebida": "Bebida"
+    },
+    "form": {
+      "labels": {
+        "name": "Nombre del plato",
+        "price": "Precio (€)",
+        "description": "Descripción (opcional)",
+        "ingredientsLegend": "Ingredientes del plato",
+        "newIngredient": "Ingrediente a añadir",
+        "newIngredientQuantity": "Cantidad del ingrediente",
+        "selectIngredient": "Seleccionar ingrediente"
+      },
+      "placeholders": {
+        "name": "Ensalada César",
+        "description": "Una deliciosa ensalada con...",
+        "quantity": "Cant."
+      },
+      "aria": {
+        "back": "Volver a la lista de platos",
+        "addIngredient": "Añadir ingrediente",
+        "removeIngredient": "Quitar {{name}}"
+      },
+      "announcements": {
+        "ingredientAdded": "Ingrediente {{name}} añadido.",
+        "ingredientRemoved": "Ingrediente {{name}} quitado."
+      },
+      "errorSummary": {
+        "one": "Revisa el formulario: hay 1 error.",
+        "many": "Revisa el formulario: hay {{count}} errores."
+      },
+      "validation": {
+        "nameRequired": "El nombre del plato es obligatorio.",
+        "pricePositive": "El precio debe ser mayor que 0.",
+        "ingredientRequired": "Selecciona un ingrediente.",
+        "ingredientDuplicate": "Ese ingrediente ya está en el plato.",
+        "quantityPositive": "La cantidad debe ser mayor que 0."
+      }
+    },
+    "errors": {
+      "loadAll": "No se pudieron cargar los platos.",
+      "loadOne": "No se pudo cargar el plato.",
+      "save": "Error al guardar el plato.",
+      "delete": "Error al eliminar el plato.",
+      "toggleAvailable": "Error al actualizar disponibilidad."
+    }
+  },
+  "ingredients": {
+    "newIngredient": "Nuevo ingrediente",
+    "editTitle": "Editar ingrediente",
+    "empty": "No hay ingredientes para este restaurante",
+    "unit": "Unidad",
+    "confirmDelete": "¿Estás seguro de eliminar este ingrediente?",
+    "form": {
+      "labels": {
+        "name": "Nombre del ingrediente",
+        "unit": "Unidad de medida"
+      },
+      "placeholders": {
+        "name": "Tomate"
+      }
+    },
+    "errors": {
+      "loadAll": "No se pudieron cargar los ingredientes.",
+      "loadOne": "No se pudo cargar el ingrediente.",
+      "save": "Error al guardar el ingrediente.",
+      "delete": "Error al eliminar el ingrediente."
+    }
+  },
+  "employees": {
+    "newEmployee": "Nuevo empleado",
+    "empty": "No hay empleados en este restaurante",
+    "submit": "Crear empleado",
+    "form": {
+      "labels": {
+        "firstName": "Nombre",
+        "lastName": "Apellido"
+      },
+      "placeholders": {
+        "firstName": "Juan",
+        "lastName": "Pérez",
+        "email": "juan@restaurante.com"
+      }
+    },
+    "errors": {
+      "loadAll": "No se pudieron cargar los empleados.",
+      "save": "Error al crear el empleado."
+    }
+  },
+  "shared": {
+    "login": {
+      "title": "RestTek",
+      "subtitle": "Accede a tu panel de gestión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Accediendo...",
+      "invalidCredentials": "Credenciales inválidas. Inténtalo de nuevo.",
+      "placeholders": {
+        "email": "tu@email.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "app": {
+    "title": "RestTek",
+    "description": "Panel de gestión de restaurantes",
+    "notFound": {
+      "code": "404",
+      "message": "Página no encontrada",
+      "backHome": "Volver al inicio"
+    }
+  },
+  "common": {
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "loading": "Cargando...",
+    "edit": "Editar",
+    "yes": "Sí",
+    "no": "No",
+    "nav": {
+      "dashboard": "Dashboard",
+      "restaurants": "Restaurantes",
+      "dishes": "Platos",
+      "ingredients": "Ingredientes",
+      "employees": "Empleados",
+      "settings": "Configuración"
+    },
+    "actions": {
+      "newRestaurant": "Nuevo restaurante"
+    },
+    "labels": {
+      "name": "Nombre",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Email",
+      "password": "Contraseña",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "owner": "Propietario",
+      "price": "Precio",
+      "category": "Categoría",
+      "available": "Disponible",
+      "role": "Rol",
+      "unit": "Unidad",
+      "currentStock": "Stock actual"
+    }
+  },
+  "domain": {
+    "dishCategories": {
+      "entrante": "Entrante",
+      "principal": "Principal",
+      "postre": "Postre",
+      "bebida": "Bebida"
+    },
+    "units": {
+      "kg": "kg",
+      "g": "g",
+      "l": "l",
+      "ml": "ml",
+      "unidad": "unidad"
+    },
+    "roles": {
+      "admin": "admin",
+      "manager": "manager",
+      "camarero": "camarero",
+      "cocinero": "cocinero"
+    }
+  },
+  "shell": {
+    "restaurantsSection": "Mis restaurantes",
+    "noRestaurants": "Sin restaurantes"
+  },
+  "dashboard": {
+    "welcome": "Bienvenido, {{name}}",
+    "subtitle": "Panel de gestión de RestTek",
+    "restaurantsCard": {
+      "title": "Restaurantes",
+      "description": "Gestiona los datos de tus restaurantes"
+    }
+  },
+  "restaurants": {
+    "errors": {
+      "loadList": "No se pudieron cargar los restaurantes.",
+      "loadOne": "No se pudo cargar el restaurante.",
+      "save": "Error al guardar el restaurante."
+    },
+    "list": {
+      "title": "Restaurantes",
+      "empty": "No hay restaurantes registrados"
+    },
+    "form": {
+      "newTitle": "Nuevo restaurante",
+      "editTitle": "Editar restaurante",
+      "fields": {
+        "name": {
+          "label": "Nombre del restaurante",
+          "placeholder": "La Trattoria"
+        },
+        "email": {
+          "placeholder": "info@restaurante.com"
+        },
+        "address": {
+          "placeholder": "Calle Mayor 10, Madrid"
+        },
+        "phone": {
+          "placeholder": "+34 612 345 678"
+        },
+        "ownerFirstName": {
+          "label": "Nombre del propietario",
+          "placeholder": "Carlos"
+        },
+        "ownerLastName": {
+          "label": "Apellido del propietario",
+          "placeholder": "García"
+        },
+        "logoUrl": {
+          "label": "URL del logo (opcional)",
+          "placeholder": "https://ejemplo.com/logo.png"
+        }
+      }
+    },
+    "dashboard": {
+      "subtitle": "Panel de gestión del restaurante",
+      "fallbackName": "Restaurante",
+      "cards": {
+        "dishes": {
+          "title": "Platos",
+          "description": "Gestiona la carta del restaurante"
+        },
+        "ingredients": {
+          "title": "Ingredientes",
+          "description": "Controla el inventario de ingredientes"
+        },
+        "employees": {
+          "title": "Empleados",
+          "description": "Administra el equipo de trabajo"
+        }
+      }
+    }
+  },
+  "dishes": {
+    "errors": {
+      "loadList": "No se pudieron cargar los platos.",
+      "loadOne": "No se pudo cargar el plato.",
+      "save": "Error al guardar el plato.",
+      "delete": "Error al eliminar el plato.",
+      "toggleAvailable": "Error al actualizar disponibilidad."
+    },
+    "list": {
+      "title": "Platos",
+      "newButton": "Nuevo plato",
+      "empty": "No hay platos para este restaurante",
+      "confirmDelete": "¿Estás seguro de eliminar este plato?"
+    },
+    "form": {
+      "newTitle": "Nuevo plato",
+      "editTitle": "Editar plato",
+      "backAriaLabel": "Volver a la lista de platos",
+      "fields": {
+        "name": {
+          "label": "Nombre del plato",
+          "placeholder": "Ensalada César"
+        },
+        "price": {
+          "label": "Precio (€)"
+        },
+        "description": {
+          "label": "Descripción (opcional)",
+          "placeholder": "Una deliciosa ensalada con..."
+        }
+      },
+      "summary": {
+        "one": "Revisa el formulario: hay 1 error.",
+        "many": "Revisa el formulario: hay {{count}} errores."
+      },
+      "validation": {
+        "nameRequired": "El nombre del plato es obligatorio.",
+        "priceGreaterThanZero": "El precio debe ser mayor que 0.",
+        "ingredientRequired": "Selecciona un ingrediente.",
+        "ingredientDuplicated": "Ese ingrediente ya está en el plato.",
+        "quantityGreaterThanZero": "La cantidad debe ser mayor que 0."
+      },
+      "ingredients": {
+        "legend": "Ingredientes del plato",
+        "chip": "{{name}} — {{quantity}}",
+        "removeAriaLabel": "Quitar {{name}}",
+        "selectLabel": "Ingrediente a añadir",
+        "selectPlaceholder": "Seleccionar ingrediente",
+        "optionLabel": "{{name}} ({{unit}})",
+        "quantityLabel": "Cantidad del ingrediente",
+        "quantityPlaceholder": "Cant.",
+        "addAriaLabel": "Añadir ingrediente",
+        "announceAdded": "Ingrediente {{name}} añadido.",
+        "announceRemoved": "Ingrediente {{name}} quitado."
+      }
+    }
+  },
+  "ingredients": {
+    "errors": {
+      "loadList": "No se pudieron cargar los ingredientes.",
+      "loadOne": "No se pudo cargar el ingrediente.",
+      "save": "Error al guardar el ingrediente.",
+      "delete": "Error al eliminar el ingrediente."
+    },
+    "list": {
+      "title": "Ingredientes",
+      "newButton": "Nuevo ingrediente",
+      "empty": "No hay ingredientes para este restaurante",
+      "confirmDelete": "¿Estás seguro de eliminar este ingrediente?"
+    },
+    "form": {
+      "newTitle": "Nuevo ingrediente",
+      "editTitle": "Editar ingrediente",
+      "fields": {
+        "name": {
+          "label": "Nombre del ingrediente",
+          "placeholder": "Tomate"
+        },
+        "unit": {
+          "label": "Unidad de medida"
+        }
+      }
+    }
+  },
+  "employees": {
+    "errors": {
+      "loadList": "No se pudieron cargar los empleados.",
+      "save": "Error al crear el empleado."
+    },
+    "list": {
+      "title": "Empleados",
+      "newButton": "Nuevo empleado",
+      "empty": "No hay empleados en este restaurante"
+    },
+    "form": {
+      "title": "Nuevo empleado",
+      "createButton": "Crear empleado",
+      "fields": {
+        "firstName": {
+          "placeholder": "Juan"
+        },
+        "lastName": {
+          "placeholder": "Pérez"
+        },
+        "email": {
+          "placeholder": "juan@restaurante.com"
+        },
+        "password": {
+          "placeholder": "••••••••"
+        }
+      }
+    }
+  },
+  "shared": {
+    "login": {
+      "subtitle": "Accede a tu panel de gestión",
+      "fields": {
+        "email": {
+          "label": "Correo electrónico",
+          "placeholder": "tu@email.com"
+        },
+        "password": {
+          "label": "Contraseña",
+          "placeholder": "••••••••"
+        }
+      },
+      "submitting": "Accediendo...",
+      "submit": "Iniciar sesión",
+      "errorInvalidCredentials": "Credenciales inválidas. Inténtalo de nuevo."
+    }
+  }
+}
