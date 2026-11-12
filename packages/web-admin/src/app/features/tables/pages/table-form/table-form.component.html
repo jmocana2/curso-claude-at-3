@@ -1,0 +1,87 @@
+<div class="fade-in">
+  <div class="page-header">
+    <div class="header-back">
+      <a [routerLink]="listUrl" class="back-link" aria-label="Volver a la lista de mesas">
+        <lucide-icon name="chevron-left" [size]="18" aria-hidden="true"></lucide-icon>
+      </a>
+      <h1>{{ pageTitle }}</h1>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div #alertaError class="alert-error" role="alert" tabindex="-1">{{ error() }}</div>
+  }
+
+  <form class="card form-card" (ngSubmit)="onSubmit()" novalidate>
+    @if (mensajesError().length > 0) {
+      <div class="alert-error error-summary" role="alert">
+        <p>Revisa el formulario: {{ mensajesError().length === 1 ? 'hay 1 error' : 'hay ' + mensajesError().length + ' errores' }}.</p>
+        <ul>
+          @for (mensaje of mensajesError(); track mensaje) {
+            <li>{{ mensaje }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="table-number">Número de mesa</label>
+        <input
+          #campoNumero
+          id="table-number"
+          type="number"
+          class="form-control"
+          [(ngModel)]="form.number"
+          name="number"
+          min="1"
+          step="1"
+          required
+          aria-required="true"
+          [attr.aria-invalid]="errores().number ? 'true' : null"
+          [attr.aria-describedby]="errores().number ? 'table-number-error' : null"
+        />
+        @if (errores().number) {
+          <p id="table-number-error" class="field-error">{{ errores().number }}</p>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="table-capacity">Capacidad (comensales)</label>
+        <input
+          #campoCapacidad
+          id="table-capacity"
+          type="number"
+          class="form-control"
+          [(ngModel)]="form.capacity"
+          name="capacity"
+          min="1"
+          step="1"
+          required
+          aria-required="true"
+          [attr.aria-invalid]="errores().capacity ? 'true' : null"
+          [attr.aria-describedby]="errores().capacity ? 'table-capacity-error' : null"
+        />
+        @if (errores().capacity) {
+          <p id="table-capacity-error" class="field-error">{{ errores().capacity }}</p>
+        }
+      </div>
+
+      <div class="form-group form-full">
+        <label for="table-description">Descripción (opcional)</label>
+        <input id="table-description" type="text" class="form-control" [(ngModel)]="form.description" name="description" placeholder="Terraza" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a class="btn btn-secondary" [routerLink]="listUrl">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        @if (loading()) {
+          Guardando...
+        } @else {
+          Guardar
+        }
+      </button>
+    </div>
+  </form>
+</div>
