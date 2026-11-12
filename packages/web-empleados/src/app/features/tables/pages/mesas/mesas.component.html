@@ -41,6 +41,26 @@
                 <option [value]="option.value" [selected]="option.value === table.status">{{ option.label }}</option>
               }
             </select>
+            @if (table.status === 'ocupada') {
+              <section class="table-orders" [attr.aria-label]="'Pedidos activos de la mesa ' + table.number">
+                <h2 class="orders-title">Pedidos activos</h2>
+                @for (order of ordersOf(table); track order.id) {
+                  <div class="table-order">
+                    <span class="order-id">Pedido #{{ order.id.substring(0, 8) }}</span>
+                    <ul class="order-items">
+                      @for (item of order.items; track item.id) {
+                        <li class="order-item">
+                          <span class="item-name">{{ item.quantity }}x {{ item.dishName || 'Producto' }}</span>
+                          <span [class]="getStatusClass(item.status)">{{ item.status }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                } @empty {
+                  <p class="table-meta">Sin pedidos activos</p>
+                }
+              </section>
+            }
           </div>
         </li>
       }
