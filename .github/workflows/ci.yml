@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, development]
+  push:
+    branches: [main, development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API (typecheck, lint y tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: packages/api
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        run: npm run lint -w @resttek/api --if-present
+
+      - name: Tests
+        run: npm test -w @resttek/api
+
+  frontends:
+    name: Build ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [web-admin, web-empleados, web-clientes]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint -w @resttek/${{ matrix.app }} --if-present
+
+      - name: Tests unitarios
+        run: npm run test -w @resttek/${{ matrix.app }} --if-present
+
+      - name: Build
+        run: npm run build -w @resttek/${{ matrix.app }}
+
+  e2e-web-admin:
+    name: E2E web-admin (Playwright)
+    runs-on: ubuntu-latest
+    needs: [api, frontends]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar navegador de Playwright
+        working-directory: packages/web-admin
+        run: npx playwright install --with-deps chromium
+
+      - name: Poblar base de datos
+        run: npm run seed
+
+      - name: Tests E2E
+        run: npm run e2e -w @resttek/web-admin
+
+      - name: Subir informe y vídeos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-web-admin
+          path: |
+            packages/web-admin/test-results/
+            packages/web-admin/playwright-report/
+          retention-days: 7
+
+  docs-review:
+    name: Revisión de coherencia con docs (Claude)
+    runs-on: ubuntu-latest
+    needs: [api, frontends]
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Revisar cambios frente a docs y OpenAPI
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: ${{ github.event.pull_request.number }}
+            RAMA BASE: ${{ github.event.pull_request.base.ref }}
+
+            Revisa si los cambios de esta pull request siguen siendo coherentes con la documentación del proyecto.
+
+            1. Obtén los cambios con `gh pr diff ${{ github.event.pull_request.number }}` y la lista de ficheros con `gh pr view ${{ github.event.pull_request.number }} --json files`.
+            2. Lee la documentación relevante de la carpeta `docs/` (arquitectura y dominio) y cualquier especificación OpenAPI/Swagger del repositorio (busca ficheros `openapi.*`, `swagger.*` o YAML/JSON con la clave `openapi:`). Si no existe ninguna especificación OpenAPI, indícalo y céntrate en `docs/`.
+            3. Detecta incoherencias reales entre el código cambiado y la documentación, por ejemplo:
+               - Endpoints, métodos, parámetros, cuerpos, códigos de estado o roles que no coinciden con lo documentado.
+               - Entidades, campos, estados de pedido, categorías, unidades o roles distintos de los del glosario y el modelo de datos.
+               - Cambios de arquitectura que contradicen `docs/arquitectura` (por ejemplo, mezclar el estilo hexagonal y el estilo por capas).
+               - Funcionalidad nueva o modificada que debería documentarse y no lo está.
+            4. Limítate a la coherencia con la documentación: no hagas revisión general de estilo ni de bugs.
+            5. Publica el resultado como un único comentario en la PR con `gh pr comment ${{ github.event.pull_request.number }} --body-file <fichero>`, escrito en español:
+               - Si hay incoherencias: una lista con el fichero del código, el documento afectado, qué no cuadra y si hay que actualizar el código o la documentación.
+               - Si no hay ninguna, no publiques nada.
+          claude_args: '--allowedTools "Read,Glob,Grep,Write,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"'
