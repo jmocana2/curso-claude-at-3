@@ -1,0 +1,49 @@
+<div class="page-header">
+  <h1>Mesas</h1>
+</div>
+
+@if (tableStore.loading() && tableStore.tables().length === 0) {
+  <div class="spinner" role="status" aria-label="Cargando mesas"></div>
+}
+
+@if (tableStore.error()) {
+  <div class="alert-error" role="alert">{{ tableStore.error() }}</div>
+}
+
+@if (!tableStore.loading() || tableStore.tables().length > 0) {
+  @if (tableStore.tables().length === 0) {
+    <div class="empty-state">
+      <p>Este restaurante no tiene mesas</p>
+    </div>
+  } @else {
+    <ul class="tables-grid" aria-label="Mesas del restaurante">
+      @for (table of tableStore.tables(); track table.id) {
+        <li class="table-card">
+          <div class="table-header">
+            <span class="table-number">Mesa {{ table.number }}</span>
+            <span [class]="getStatusClass(table.status)">{{ table.status }}</span>
+          </div>
+          <div class="table-body">
+            <p class="table-meta">
+              Capacidad: {{ table.capacity }} {{ table.capacity === 1 ? 'persona' : 'personas' }}
+            </p>
+            @if (table.description) {
+              <p class="table-meta">{{ table.description }}</p>
+            }
+            <label class="status-label" [attr.for]="'status-' + table.id">Estado de la mesa {{ table.number }}</label>
+            <select
+              class="form-control"
+              [id]="'status-' + table.id"
+              [value]="table.status"
+              (change)="onStatusChange(table, $event)"
+            >
+              @for (option of statusOptions; track option.value) {
+                <option [value]="option.value" [selected]="option.value === table.status">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+}
