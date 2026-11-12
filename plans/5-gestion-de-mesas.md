@@ -77,73 +77,73 @@ Incorporar las mesas al dominio de Resttek. El administrador gestiona las mesas 
 
 **API — modelo y persistencia**
 
-- [ ] 1. `models/table.model.ts`: interfaz `Table` (`id`, `number`, `description`, `capacity`, `status`, `restaurantId`, `createdAt`, `updatedAt`), `TableStatusType` y `normalizeTableStatus()` con su test (`table.model.test.ts`), más `InvalidTableStatusError` en `DomainErrors.ts`.
-- [ ] 2. Resto de errores de dominio de mesas en `DomainErrors.ts` y su mapeo a 404 / 409 en `errorHandler.ts` (añadir lista `CONFLICT_ERRORS`).
-- [ ] 3. Crear la tabla `tables` en `runInitialMigrations()` (`number INTEGER NOT NULL`, `description TEXT`, `capacity INTEGER NOT NULL`, `status TEXT NOT NULL DEFAULT 'libre'`, FK a `restaurants`, `UNIQUE(restaurant_id, number)`).
-- [ ] 4. `TableRepository` + `SqliteTableRepository`: `findById`, `findByRestaurantId` (ordenado por `number`) y `save` (insert/update), con tests en `table.repository.test.ts`.
-- [ ] 5. Repositorio: `delete`, `findAvailable(restaurantId, minCapacity)` (`status = 'libre' AND capacity >= ?`, orden por capacidad y número) con tests.
-- [ ] 6. Repositorio: `occupyIfFree(id)` con `UPDATE ... SET status = 'ocupada' WHERE id = ? AND status = 'libre'` que devuelve si cambió una fila; test de doble ocupación.
-- [ ] 7. `MockTableRepository` en `repositories/mocks/`.
+- [x] 1. `models/table.model.ts`: interfaz `Table` (`id`, `number`, `description`, `capacity`, `status`, `restaurantId`, `createdAt`, `updatedAt`), `TableStatusType` y `normalizeTableStatus()` con su test (`table.model.test.ts`), más `InvalidTableStatusError` en `DomainErrors.ts`.
+- [x] 2. Resto de errores de dominio de mesas en `DomainErrors.ts` y su mapeo a 404 / 409 en `errorHandler.ts` (añadir lista `CONFLICT_ERRORS`).
+- [x] 3. Crear la tabla `tables` en `runInitialMigrations()` (`number INTEGER NOT NULL`, `description TEXT`, `capacity INTEGER NOT NULL`, `status TEXT NOT NULL DEFAULT 'libre'`, FK a `restaurants`, `UNIQUE(restaurant_id, number)`).
+- [x] 4. `TableRepository` + `SqliteTableRepository`: `findById`, `findByRestaurantId` (ordenado por `number`) y `save` (insert/update), con tests en `table.repository.test.ts`.
+- [x] 5. Repositorio: `delete`, `findAvailable(restaurantId, minCapacity)` (`status = 'libre' AND capacity >= ?`, orden por capacidad y número) con tests.
+- [x] 6. Repositorio: `occupyIfFree(id)` con `UPDATE ... SET status = 'ocupada' WHERE id = ? AND status = 'libre'` que devuelve si cambió una fila; test de doble ocupación.
+- [x] 7. `MockTableRepository` en `repositories/mocks/`.
 
 **API — servicio**
 
-- [ ] 8. `TableService.create`: validaciones (número y capacidad enteros > 0, `restaurantId` requerido, descripción opcional con trim, estado inicial `libre`) y número duplicado → `DuplicatedTableNumberError`. Tests.
-- [ ] 9. `TableService.update` y `delete` (incluido `TableNotFoundError` y mesa de otro restaurante tratada como no encontrada). Tests.
-- [ ] 10. `TableService.changeStatus` y `findByRestaurantId`. Tests.
-- [ ] 11. `TableService.findAvailable(restaurantId, people)` (`people` entero > 0, si no `InvalidPeopleCountError`) y `occupy` (`TableNotAvailableError` si no está libre). Tests.
+- [x] 8. `TableService.create`: validaciones (número y capacidad enteros > 0, `restaurantId` requerido, descripción opcional con trim, estado inicial `libre`) y número duplicado → `DuplicatedTableNumberError`. Tests.
+- [x] 9. `TableService.update` y `delete` (incluido `TableNotFoundError` y mesa de otro restaurante tratada como no encontrada). Tests.
+- [x] 10. `TableService.changeStatus` y `findByRestaurantId`. Tests.
+- [x] 11. `TableService.findAvailable(restaurantId, people)` (`people` entero > 0, si no `InvalidPeopleCountError`) y `occupy` (`TableNotAvailableError` si no está libre). Tests.
 
 **API — HTTP**
 
-- [ ] 12. Middleware `authorizeRestaurant` en `middlewares.ts`: `admin` pasa; `manager` / `camarero` solo si `user.restaurantId === req.params.restaurantId`, si no 403. Test unitario.
-- [ ] 13. `TableController` (create, getAll, getById, update, delete, changeStatus, getAvailable, occupy) y `toJSON`.
-- [ ] 14. `routes/table.routes.ts` con roles (CRUD `admin`; `GET /` y `PATCH /:id/status` `admin`/`manager`/`camarero` + `authorizeRestaurant`; `GET /available?people=N` y `POST /:id/occupy` `cliente`) y montaje en `app.ts`. Declarar `/available` antes de `/:id`.
-- [ ] 15. Tests HTTP en `table.routes.test.ts`: 201/400/409 en alta, 403 por rol y por restaurante ajeno, 200 en disponibles y 409 al ocupar una mesa ocupada.
-- [ ] 16. `OrderService.create`: si llega `tableId`, comprobar que existe y es del `restaurantId` (si no, `TableNotFoundError`); inyectar `TableRepository` en `order.routes.ts`. Tests en `order.service.test.ts`.
-- [ ] 17. Seed: 6 mesas para `rest-1` y 4 para `rest-2` con capacidades 2, 4 y 6 (`INSERT OR IGNORE`, IDs fijos `table-1-1`...). Verificar con `npm run seed`.
+- [x] 12. Middleware `authorizeRestaurant` en `middlewares.ts`: `admin` pasa; `manager` / `camarero` solo si `user.restaurantId === req.params.restaurantId`, si no 403. Test unitario.
+- [x] 13. `TableController` (create, getAll, getById, update, delete, changeStatus, getAvailable, occupy) y `toJSON`.
+- [x] 14. `routes/table.routes.ts` con roles (CRUD `admin`; `GET /` y `PATCH /:id/status` `admin`/`manager`/`camarero` + `authorizeRestaurant`; `GET /available?people=N` y `POST /:id/occupy` `cliente`) y montaje en `app.ts`. Declarar `/available` antes de `/:id`.
+- [x] 15. Tests HTTP en `table.routes.test.ts`: 201/400/409 en alta, 403 por rol y por restaurante ajeno, 200 en disponibles y 409 al ocupar una mesa ocupada.
+- [x] 16. `OrderService.create`: si llega `tableId`, comprobar que existe y es del `restaurantId` (si no, `TableNotFoundError`); inyectar `TableRepository` en `order.routes.ts`. Tests en `order.service.test.ts`.
+- [x] 17. Seed: 6 mesas para `rest-1` y 4 para `rest-2` con capacidades 2, 4 y 6 (`INSERT OR IGNORE`, IDs fijos `table-1-1`...). Verificar con `npm run seed`.
 
 **web-admin**
 
-- [ ] 18. `features/tables`: `models/table.model.ts`, `services/table.service.ts` y `store/table.store.ts` siguiendo `ingredients`.
-- [ ] 19. Página `table-list` (número, descripción, capacidad, estado, editar y borrar con confirmación).
-- [ ] 20. Página `table-form` (alta/edición con validaciones de número y capacidad, accesible y manejable con teclado como el formulario de platos) y `tables.routes.ts`.
-- [ ] 21. Ruta en `app.routes.ts`, enlace "Mesas" en el submenú del shell y tarjeta en el dashboard del restaurante. Verificar con `npm run build -w @resttek/web-admin`.
+- [x] 18. `features/tables`: `models/table.model.ts`, `services/table.service.ts` y `store/table.store.ts` siguiendo `ingredients`.
+- [x] 19. Página `table-list` (número, descripción, capacidad, estado, editar y borrar con confirmación).
+- [x] 20. Página `table-form` (alta/edición con validaciones de número y capacidad, accesible y manejable con teclado como el formulario de platos) y `tables.routes.ts`.
+- [x] 21. Ruta en `app.routes.ts`, enlace "Mesas" en el submenú del shell y tarjeta en el dashboard del restaurante. Verificar con `npm run build -w @resttek/web-admin`.
 
 **web-empleados**
 
-- [ ] 22. `features/tables`: modelo, servicio (`getAll`, `changeStatus`) y store con polling (mismo intervalo que pedidos).
-- [ ] 23. Página `mesas`: tarjeta por mesa con estado y selector para cambiarlo.
-- [ ] 24. En cada mesa ocupada, mostrar sus pedidos activos (filtrando `GET /orders/active` por `tableId`) con el estado de cada ítem.
-- [ ] 25. Ruta `mesas` y enlace "Mesas" en el shell para `manager` y `camarero`. Verificar con `npm run build -w @resttek/web-empleados`.
+- [x] 22. `features/tables`: modelo, servicio (`getAll`, `changeStatus`) y store con polling (mismo intervalo que pedidos).
+- [x] 23. Página `mesas`: tarjeta por mesa con estado y selector para cambiarlo.
+- [x] 24. En cada mesa ocupada, mostrar sus pedidos activos (filtrando `GET /orders/active` por `tableId`) con el estado de cada ítem.
+- [x] 25. Ruta `mesas` y enlace "Mesas" en el shell para `manager` y `camarero`. Verificar con `npm run build -w @resttek/web-empleados`.
 
 **web-clientes**
 
-- [ ] 26. `core/models/table.model.ts` y `core/services/table.service.ts` (`getAvailable(restaurantId, people)`, `occupy(restaurantId, tableId)`).
-- [ ] 27. `cart.store.ts`: guardar `tableId` y `tableNumber` de la mesa elegida y limpiarlos con el carrito.
-- [ ] 28. `table-selection.component.ts`: campo de número de personas, botón "Buscar mesas", listado de mesas disponibles (radio), botón "Continuar" que ocupa la mesa y navega a la carta; si responde 409, mensaje y recarga del listado.
-- [ ] 29. Rutas: `restaurants/:id/mesa`; la tarjeta del listado de restaurantes lleva ahí y la carta redirige a la selección si no hay mesa elegida para ese restaurante.
-- [ ] 30. Enviar `tableId` al crear el pedido (`order.service.ts` y `cart.component.ts`) y mostrar la mesa en el carrito. Verificar con `npm run build -w @resttek/web-clientes`.
+- [x] 26. `core/models/table.model.ts` y `core/services/table.service.ts` (`getAvailable(restaurantId, people)`, `occupy(restaurantId, tableId)`).
+- [x] 27. `cart.store.ts`: guardar `tableId` y `tableNumber` de la mesa elegida y limpiarlos con el carrito.
+- [x] 28. `table-selection.component.ts`: campo de número de personas, botón "Buscar mesas", listado de mesas disponibles (radio), botón "Continuar" que ocupa la mesa y navega a la carta; si responde 409, mensaje y recarga del listado.
+- [x] 29. Rutas: `restaurants/:id/mesa`; la tarjeta del listado de restaurantes lleva ahí y la carta redirige a la selección si no hay mesa elegida para ese restaurante.
+- [x] 30. Enviar `tableId` al crear el pedido (`order.service.ts` y `cart.component.ts`) y mostrar la mesa en el carrito. Verificar con `npm run build -w @resttek/web-clientes`.
 
 **Documentación y cierre**
 
-- [ ] 31. Documentar la tabla `tables`, su relación con `orders.table_id`, los estados de mesa y los endpoints en `docs/`.
+- [x] 31. Documentar la tabla `tables`, su relación con `orders.table_id`, los estados de mesa y los endpoints en `docs/`.
 - [ ] 32. Pasar `npm test` completo y prueba manual del flujo cliente → empleado → admin con los datos del seed.
 
 ## Criterios de aceptación
 
-- [ ] Dado un `admin`, cuando hace `POST /api/v1/restaurants/rest-1/tables` con `{ number: 7, capacity: 4, description: "Terraza" }`, entonces recibe `201` con la mesa en estado `libre`.
-- [ ] Dado que ya existe la mesa número 7 en `rest-1`, cuando se crea otra con el mismo número, entonces recibe `409` con `error: "DuplicatedTableNumberError"`; en `rest-2` el mismo número sí se permite.
-- [ ] Cuando se crea o edita una mesa con capacidad o número no enteros o ≤ 0, o con un estado distinto de `libre`, `ocupada` o `reservada`, entonces recibe `400`.
-- [ ] `PUT` y `DELETE` de una mesa inexistente devuelven `404`; un `manager`, `camarero`, `cocinero` o `cliente` recibe `403` en `POST`, `PUT` y `DELETE`.
-- [ ] Dado un `camarero` de `rest-1`, cuando hace `GET` o `PATCH /:id/status` sobre mesas de `rest-1` recibe `200`, y sobre `rest-2` recibe `403`.
-- [ ] Dado un `cliente`, cuando hace `GET /api/v1/restaurants/rest-1/tables/available?people=3`, entonces solo recibe mesas `libre` con `capacity >= 3`; con `people` ausente, 0 o no numérico recibe `400`.
-- [ ] Cuando un `cliente` hace `POST /:id/occupy` sobre una mesa libre recibe `200` y la mesa pasa a `ocupada`; si ya estaba ocupada o reservada recibe `409`.
-- [ ] `POST /api/v1/orders` con un `tableId` de otro restaurante o inexistente devuelve un error y no crea el pedido; con un `tableId` válido, el pedido se guarda con esa mesa.
+- [x] Dado un `admin`, cuando hace `POST /api/v1/restaurants/rest-1/tables` con `{ number: 7, capacity: 4, description: "Terraza" }`, entonces recibe `201` con la mesa en estado `libre`.
+- [x] Dado que ya existe la mesa número 7 en `rest-1`, cuando se crea otra con el mismo número, entonces recibe `409` con `error: "DuplicatedTableNumberError"`; en `rest-2` el mismo número sí se permite.
+- [x] Cuando se crea o edita una mesa con capacidad o número no enteros o ≤ 0, o con un estado distinto de `libre`, `ocupada` o `reservada`, entonces recibe `400`.
+- [x] `PUT` y `DELETE` de una mesa inexistente devuelven `404`; un `manager`, `camarero`, `cocinero` o `cliente` recibe `403` en `POST`, `PUT` y `DELETE`.
+- [x] Dado un `camarero` de `rest-1`, cuando hace `GET` o `PATCH /:id/status` sobre mesas de `rest-1` recibe `200`, y sobre `rest-2` recibe `403`.
+- [x] Dado un `cliente`, cuando hace `GET /api/v1/restaurants/rest-1/tables/available?people=3`, entonces solo recibe mesas `libre` con `capacity >= 3`; con `people` ausente, 0 o no numérico recibe `400`.
+- [x] Cuando un `cliente` hace `POST /:id/occupy` sobre una mesa libre recibe `200` y la mesa pasa a `ocupada`; si ya estaba ocupada o reservada recibe `409`.
+- [x] `POST /api/v1/orders` con un `tableId` de otro restaurante o inexistente devuelve un error y no crea el pedido; con un `tableId` válido, el pedido se guarda con esa mesa.
 - [ ] En `web-admin` se pueden crear, editar y borrar mesas de un restaurante desde la sección "Mesas".
 - [ ] En `web-empleados`, un camarero ve todas las mesas de su restaurante con su estado, puede cambiarlo y ve los pedidos activos de cada mesa ocupada.
 - [ ] En `web-clientes`, al elegir un restaurante se pide el número de personas, se muestran solo las mesas disponibles con capacidad suficiente y, al pulsar "Continuar", la mesa queda ocupada y se muestra la carta; el pedido enviado lleva la mesa.
-- [ ] La documentación de `docs/` refleja la tabla, los estados y los endpoints nuevos.
+- [x] La documentación de `docs/` refleja la tabla, los estados y los endpoints nuevos.
 - [ ] El código pasa eslint y está formateado con prettier (no aplica: el proyecto no tiene eslint ni prettier configurados).
-- [ ] Los tests de vitest relacionados pasan (`npm test`) y los tres frontends compilan con `npm run build`.
+- [x] Los tests de vitest relacionados pasan (`npm test`) y los tres frontends compilan con `npm run build`.
 
 ## Dudas y decisiones
 
